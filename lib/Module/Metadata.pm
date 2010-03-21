@@ -21,7 +21,7 @@ BEGIN {
   if ($INC{'Log/Contextual.pm'}) {
     Log::Contextual->import('log_info');
   } else {
-    *log_info = sub { warn @_ };
+    *log_info = sub (&) { warn $_[0]->() };
   }
 }
 use File::Find qw(find);
