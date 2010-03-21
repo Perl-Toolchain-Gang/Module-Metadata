@@ -17,7 +17,13 @@ $VERSION = eval $VERSION;
 use File::Spec;
 use IO::File;
 use Module::Metadata::Version;
-use Log::Contextual qw(:log :dlog);
+BEGIN {
+  if ($INC{'Log/Contextual.pm'}) {
+    Log::Contextual->import('log_info');
+  } else {
+    *log_info = sub { warn @_ };
+  }
+}
 use File::Find qw(find);
 
 my $V_NUM_REGEXP = qr{v?[0-9._]+};  # crudely, a v-string or decimal
