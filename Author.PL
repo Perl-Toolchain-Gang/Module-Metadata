@@ -44,6 +44,8 @@ manifest_include(
   'lib' => '.pm',
   't' => '.t',
   't/lib' => '.pm',
+  'xt' => '.t',
+  'xt/lib' => '.pm',
   '' => '.PL',
   '' => qr{Changes|MANIFEST|README|META\.yml}
 );
