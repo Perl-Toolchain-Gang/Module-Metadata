@@ -1,0 +1,51 @@
+use strict;
+use warnings FATAL => 'all';
+
+{
+  package MY;
+  push @ExtUtils::MakeMaker::Overridable, 'find_tests';
+  sub find_tests {
+    shift->SUPER::find_tests.' xt/*.t';
+  }
+}
+
+{
+  no warnings 'redefine';
+  sub WriteMakefile {
+    my %args = @_;
+    ExtUtils::MakeMaker::WriteMakefile(
+      %args,
+      AUTHOR => 'Ken Williams <kwilliams@cpan.org>, Randy W. Sims <RandyS@ThePierianSpring.org>',
+      ABSTRACT_FROM => $args{VERSION_FROM},
+    );
+  }
+}
+
+sub manifest_include {
+  use autodie;
+  my @files = @_;
+  my @parts;
+  while (my ($dir, $spec) = splice(@files, 0, 2)) {
+    my $re = ($dir ? $dir.'/' : '').
+      ((ref($spec) eq 'Regexp')
+        ? $spec
+        : !ref($spec)
+          ? ".*\Q${spec}\E"
+          : die "spec must be string or regexp, was: ${spec} (${\ref $spec})");
+    push @parts, $re;
+  }
+  my $final = '^(?!'.join('|', map "${_}\$", @parts).')';
+  open my $skip, '>', 'MANIFEST.SKIP';
+  print $skip "${final}\n";
+  close $skip;
+}
+
+manifest_include(
+  'lib' => '.pm',
+  't' => '.t',
+  't/lib' => '.pm',
+  '' => '.PL',
+  '' => qr{Changes|MANIFEST|README|META\.yml}
+);
+
+1;
