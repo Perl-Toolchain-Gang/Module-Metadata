@@ -597,14 +597,9 @@ sub pod {
 
 1;
 
-__END__
-
-=for :stopwords ModuleInfo
-
 =head1 NAME
 
-ModuleInfo - Gather package and POD information from a perl module file
-
+Module::Metadata - Gather package and POD information from perl module files
 
 =head1 DESCRIPTION
 
@@ -675,13 +670,33 @@ optional parameter, otherwise @INC is searched.
 
 Can be called as either an object or a class method.
 
-=back
+=item package_versions_from_directory($dir, \@files?)
 
+Scans C<$dir> for .pm files (unless C<@files> is given, in which case looks
+for those files in C<$dir> - and reads each file for packages and versions,
+returning a hashref of the form:
+
+  {
+    'Package::Name' => {
+      version => '0.123',
+      file => 'Package/Name.pm'
+    },
+    'OtherPackage::Name' => ...
+  }
+
+=item log_info (internal)
+
+Used internally to perform logging; imported from Log::Contextual if
+Log::Contextual has already been loaded, otherwise simply calls warn.
+
+=back
 
 =head1 AUTHOR
 
 Ken Williams <kwilliams@cpan.org>, Randy W. Sims <RandyS@ThePierianSpring.org>
 
+Released as Module::Metadata by Matt S Trout (mst) <mst@shadowcat.co.uk> with
+assistance from David Golden (xdg) <dagolden@cpan.org>
 
 =head1 COPYRIGHT
 
@@ -690,10 +705,9 @@ Copyright (c) 2001-2006 Ken Williams.  All rights reserved.
 This library is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
 
-
 =head1 SEE ALSO
 
-perl(1), L<Module::Metadata>(3)
+perl(1), L<Module::Build::ModuleInfo>(3)
 
 =cut
 
