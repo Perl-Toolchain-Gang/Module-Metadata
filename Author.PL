@@ -3,7 +3,9 @@ use warnings FATAL => 'all';
 
 {
   package MY;
-  push @ExtUtils::MakeMaker::Overridable, 'find_tests';
+  {
+    no warnings 'once'; push @ExtUtils::MakeMaker::Overridable, 'find_tests';
+  }
   sub find_tests {
     shift->SUPER::find_tests.' xt/*.t';
   }
