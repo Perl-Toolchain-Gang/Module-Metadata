@@ -1,0 +1,10 @@
+1.0.1 2010-07-09 00:52:37
+  - fix build code to prevent Author.PL being mistakenly run during make
+    and add some extra author-side tools (MSTROUT)
+
+1.0.0 2010-07-07
+  - Initial release (MSTROUT)
+  - Code extracted from Module::Build + Module::Build::Version (MSTROUT)
+  - Tests extracted from Module::Build (DAGOLDEN)
+  - POD coverage (MSTROUT)
+  - Use of Log::Contextual when loaded with fallback to warn() (MSTROUT)
