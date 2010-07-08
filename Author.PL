@@ -1,14 +1,26 @@
 use strict;
 use warnings FATAL => 'all';
 
+my $POSTAMBLE = q{bump:
+	maint/bump-version
+bumpminor:
+	maint/bump-version minor
+bumpmajor:
+	maint/bump-version major
+};
+
 {
   package MY;
+
   {
     no warnings 'once'; push @ExtUtils::MakeMaker::Overridable, 'find_tests';
   }
+
   sub find_tests {
     shift->SUPER::find_tests.' xt/*.t';
   }
+
+  sub postamble { $POSTAMBLE }
 }
 
 {
