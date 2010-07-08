@@ -3,10 +3,15 @@ use warnings FATAL => 'all';
 
 my $POSTAMBLE = q{bump:
 	maint/bump-version
+	rm Makefile
 bumpminor:
 	maint/bump-version minor
+	rm Makefile
 bumpmajor:
 	maint/bump-version major
+	rm Makefile
+upload: $(DISTVNAME).tar$(SUFFIX)
+	cpan-upload $<
 };
 
 {
@@ -61,7 +66,8 @@ manifest_include(
   'xt' => '.t',
   'xt/lib' => '.pm',
   '' => '.PL',
-  '' => qr{Changes|MANIFEST|README|META\.yml}
+  '' => qr{Changes|MANIFEST|README|META\.yml},
+  'maint' => qr{[^.].*},
 );
 
 1;

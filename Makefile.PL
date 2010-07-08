@@ -2,7 +2,7 @@ use strict;
 use warnings FATAL => 'all';
 use ExtUtils::MakeMaker;
 
-(do 'Author.PL' or die $@) unless -f 'META.yml';
+(do 'maint/Makefile.PL.include' or die $@) unless -f 'META.yml';
 
 WriteMakefile(
   NAME => 'Module::Metadata',
