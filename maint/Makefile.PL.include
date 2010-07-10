@@ -1,19 +1,6 @@
 use strict;
 use warnings FATAL => 'all';
 
-my $POSTAMBLE = q{bump:
-	maint/bump-version
-	rm Makefile
-bumpminor:
-	maint/bump-version minor
-	rm Makefile
-bumpmajor:
-	maint/bump-version major
-	rm Makefile
-upload: $(DISTVNAME).tar$(SUFFIX)
-	cpan-upload $<
-};
-
 {
   package MY;
 
@@ -25,7 +12,7 @@ upload: $(DISTVNAME).tar$(SUFFIX)
     shift->SUPER::find_tests.' xt/*.t';
   }
 
-  sub postamble { $POSTAMBLE }
+  sub postamble { 'include maint/Makefile.include' }
 }
 
 {
