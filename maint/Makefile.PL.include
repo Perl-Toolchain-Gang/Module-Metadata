@@ -23,6 +23,7 @@ use warnings FATAL => 'all';
       %args,
       AUTHOR => 'Ken Williams <kwilliams@cpan.org>, Randy W. Sims <RandyS@ThePierianSpring.org>',
       ABSTRACT_FROM => $args{VERSION_FROM},
+      LICENSE => 'perl',
     );
   }
 }
