@@ -542,24 +542,72 @@ sub _evaluate_version_line {
   die "Could not get version from $self->{filename} by executing:\n$eval\n\nThe fatal error was: $@\n"
     if $@;
 
-  # Activestate apparently creates custom versions like '1.23_45_01', which
-  # cause version.pm to think it's an invalid alpha.  So check for that
-  # and strip them
-  my $num_dots = () = $result =~ m{\.}g;
-  my $num_unders = () = $result =~ m{_}g;
-  if ( substr($result,0,1) ne 'v' && $num_dots < 2 && $num_unders > 1 ) {
-    $result =~ s{_}{}g;
-  }
-
   # Upgrade it into a version object
-  eval { $result = version->new($result) };
+  my $version = eval { _dwim_version($result) };
+
   die "Version '$result' from $self->{filename} does not appear to be valid:\n$eval\n\nThe fatal error was: $@\n"
-    if $@;
+    unless defined $version; # "0" is OK!
 
-  return $result;
+  return $version;
 }
 }
 
+# Try to DWIM when things fail the lax version test in obvious ways
+{
+  my @version_prep = (
+    # Best case, it just works
+    sub { return shift },
+
+    # If we still don't have a version, try stripping any
+    # trailing junk that is prohibited by lax rules
+    sub {
+      my $v = shift;
+      $v =~ s{([0-9])[a-z-].*$}{$1}i; # 1.23-alpha or 1.23b
+      return $v;
+    },
+
+    # Activestate apparently creates custom versions like '1.23_45_01', which
+    # cause version.pm to think it's an invalid alpha.  So check for that
+    # and strip them
+    sub {
+      my $v = shift;
+      my $num_dots = () = $v =~ m{(\.)}g;
+      my $num_unders = () = $v =~ m{(_)}g;
+      my $leading_v = substr($v,0,1) eq 'v';
+      if ( ! $leading_v && $num_dots < 2 && $num_unders > 1 ) {
+        $v =~ s{_}{}g;
+        $num_unders = () = $v =~ m{(_)}g;
+      }
+      return $v;
+    },
+
+    # Worst case, try numifying it like we would have before version objects
+    sub {
+      my $v = shift;
+      no warnings 'numeric';
+      return 0 + $v;
+    },
+
+  );
+
+  sub _dwim_version {
+    my ($result) = shift;
+
+    return $result if ref($result) eq 'version';
+
+    my ($version, $error);
+    for my $f (@version_prep) {
+      $result = $f->($result);
+      $version = eval { version->new($result) };
+      $error ||= $@ if $@; # capture first failure
+      last if defined $version;
+    }
+
+    die $error unless defined $version;
+
+    return $version;
+  }
+}
 
 ############################################################
 

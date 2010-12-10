@@ -150,6 +150,26 @@ our $VERSION = '1.23_00_00';
   'v1.2_3' => <<'---', # package NAME VERSION
   package Simple v1.2_3;
 ---
+  '1.23' => <<'---', # trailing crud
+  package Simple;
+  our $VERSION;
+  $VERSION = '1.23-alpha';
+---
+  '1.23' => <<'---', # trailing crud
+  package Simple;
+  our $VERSION;
+  $VERSION = '1.23b';
+---
+  '1.234' => <<'---', # multi_underscore
+  package Simple;
+  our $VERSION;
+  $VERSION = '1.2_3_4';
+---
+  '0' => <<'---', # non-numeric
+  package Simple;
+  our $VERSION;
+  $VERSION = 'onetwothree';
+---
 );
 my %modules = reverse @modules;
 
