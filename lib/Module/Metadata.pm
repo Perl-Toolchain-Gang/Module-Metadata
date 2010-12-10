@@ -543,7 +543,7 @@ sub _evaluate_version_line {
     if $@;
 
   # Activestate apparently creates custom versions like '1.23_45_01', which
-  # cause M::B::Version to think it's an invalid alpha.  So check for that
+  # cause version.pm to think it's an invalid alpha.  So check for that
   # and strip them
   my $num_dots = () = $result =~ m{\.}g;
   my $num_unders = () = $result =~ m{_}g;
@@ -551,7 +551,7 @@ sub _evaluate_version_line {
     $result =~ s{_}{}g;
   }
 
-  # Bless it into our own version class
+  # Upgrade it into a version object
   eval { $result = version->new($result) };
   die "Version '$result' from $self->{filename} does not appear to be valid:\n$eval\n\nThe fatal error was: $@\n"
     if $@;
