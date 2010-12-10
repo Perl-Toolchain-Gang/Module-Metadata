@@ -1,3 +1,9 @@
+1.0.2 2010-12-10 12:00:00
+  - Remove Module::Metadata::Version and depend directly on version.pm
+    (DAGOLDEN)
+  - Munge versions that fail even "lax" version number rules to try
+    to return something sensible (DAGOLDEN)
+
 1.0.1 2010-07-09 00:52:37
   - fix build code to prevent Author.PL being mistakenly run during make
     and add some extra author-side tools (MSTROUT)
