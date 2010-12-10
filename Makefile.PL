@@ -6,5 +6,8 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
   NAME => 'Module::Metadata',
-  VERSION_FROM => 'lib/Module/Metadata.pm'
+  VERSION_FROM => 'lib/Module/Metadata.pm',
+  PREREQ_PM => {
+    'version' => 0.87,
+  },
 );
