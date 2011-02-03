@@ -1,3 +1,6 @@
+1.0.4 2011-02-03 07:55:00
+  - Fix broken metadata.t when @INC has relative paths (JJORE)
+
 1.0.3 2011-01-06 21:35:00
   - Pod cleanup (DAGOLDEN)
 
