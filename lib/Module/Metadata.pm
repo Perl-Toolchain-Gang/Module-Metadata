@@ -517,9 +517,9 @@ sub _evaluate_version_line {
     use version;
     no strict;
 
-    local $sigil$var;
-    \$$var=undef;
       \$vsub = sub {
+        local $sigil$var;
+        \$$var=undef;
         $line;
         \$$var
       };
