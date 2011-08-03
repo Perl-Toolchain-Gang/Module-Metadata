@@ -69,6 +69,18 @@ sub new_from_file {
   return $class->_init(undef, $filename, @_);
 }
 
+sub new_from_handle {
+  my $class    = shift;
+  my $handle   = shift;
+  my $filename = shift;
+  return undef unless defined($handle) && defined($filename);
+  $filename = File::Spec->rel2abs( $filename );
+
+  return $class->_init(undef, $filename, @_, handle => $handle);
+
+}
+
+
 sub new_from_module {
   my $class   = shift;
   my $module  = shift;
@@ -281,6 +293,7 @@ sub _init {
   my $filename = shift;
   my %props = @_;
 
+  my $handle = delete $props{handle};
   my( %valid_props, @valid_props );
   @valid_props = qw( collect_pod inc );
   @valid_props{@valid_props} = delete( @props{@valid_props} );
@@ -301,7 +314,12 @@ sub _init {
 
   my $self = bless(\%data, $class);
 
-  $self->_parse_file();
+  if ( $handle ) {
+    $self->_parse_fh($handle);
+  }
+  else {
+    $self->_parse_file();
+  }
 
   unless($self->{module} and length($self->{module})) {
     my ($v, $d, $f) = File::Spec->splitpath($self->{filename});
@@ -658,6 +676,14 @@ argument C<collect_pod> which is a boolean that determines whether
 POD data is collected and stored for reference. POD data is not
 collected by default. POD headings are always collected.
 
+=item new_from_handle($handle, $filename, collect_pod => 1)
+
+This works just like C<new_from_file>, except that a handle can be provided
+as the first argument.  Note that there is no validation to confirm that the
+handle is a handle or something that can act like one.  Passing something that
+isn't a handle will cause a exception when trying to read from it.  The
+C<filename> argument is mandatory or undef will be returned.
+
 =item new_from_module($module, collect_pod => 1, inc => \@dirs)
 
 Construct a C<Module::Metadata> object given a module or package name. In addition
@@ -665,6 +691,7 @@ to accepting the C<collect_pod> argument as described above, this
 method accepts a C<inc> argument which is a reference to an array of
 of directories to search for the module. If none are given, the
 default is @INC.
+
 
 =item name()
 
