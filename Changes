@@ -1,7 +1,9 @@
-1.0.5 2011-08-01 08:24:00
+1.0.5 2011-08-02 09:45:00
   - Localize $package::VERSION during version discovery (MIYAGAWA)
   - Fix references to Module::Build::ModuleInfo [RT #66133] (DAGOLDEN)
   - Added 'new_from_handle()' method [RT #68875] (DAGOLDEN)
+  - Improved documentation (SYNOPSIS, broke out class/object method, and
+    other minor edits) (DAGOLDEN)
 
 1.0.4 2011-02-03 07:55:00
   - Fix broken metadata.t when @INC has relative paths (JJORE)
