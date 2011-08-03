@@ -183,7 +183,6 @@ sub new_from_module {
   
         if ( $package eq $prime_package ) {
           if ( exists( $prime{$package} ) ) {
-            # M::B::ModuleInfo will handle this conflict
             die "Unexpected conflict in '$package'; multiple versions found.\n";
           } else {
             $prime{$package}{file} = $mapped_filename;
@@ -654,14 +653,14 @@ Module::Metadata - Gather package and POD information from perl module files
 
 =item new_from_file($filename, collect_pod => 1)
 
-Construct a C<ModuleInfo> object given the path to a file. Takes an optional
+Construct a C<Module::Metadata> object given the path to a file. Takes an optional
 argument C<collect_pod> which is a boolean that determines whether
 POD data is collected and stored for reference. POD data is not
 collected by default. POD headings are always collected.
 
 =item new_from_module($module, collect_pod => 1, inc => \@dirs)
 
-Construct a C<ModuleInfo> object given a module or package name. In addition
+Construct a C<Module::Metadata> object given a module or package name. In addition
 to accepting the C<collect_pod> argument as described above, this
 method accepts a C<inc> argument which is a reference to an array of
 of directories to search for the module. If none are given, the
