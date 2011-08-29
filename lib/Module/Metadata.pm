@@ -36,7 +36,7 @@ my $PKG_REGEXP  = qr{   # match a package declaration
   \s*                   # optional whitespace
   ($V_NUM_REGEXP)?        # optional version number
   \s*                   # optional whitesapce
-  ;                     # semicolon line terminator
+  [;\{]                 # semicolon line terminator or block start (since 5.16)
 }x;
 
 my $VARNAME_REGEXP = qr{ # match fully-qualified VERSION name

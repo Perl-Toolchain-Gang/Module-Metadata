@@ -180,6 +180,26 @@ our $VERSION = '1.23_00_00';
   our $VERSION;
   $VERSION = 'onetwothree';
 ---
+  $undef => <<'---', # package NAME BLOCK, undef $VERSION
+package Simple {
+  our $VERSION;
+}
+---
+  '1.23' => <<'---', # package NAME BLOCK, with $VERSION
+package Simple {
+  our $VERSION = '1.23';
+}
+---
+  '1.23' => <<'---', # package NAME VERSION BLOCK
+package Simple 1.23 {
+  1;
+}
+---
+  'v1.2.3_4' => <<'---', # package NAME VERSION BLOCK
+package Simple v1.2.3_4 {
+  1;
+}
+---
 );
 my %modules = reverse @modules;
 
