@@ -1,3 +1,6 @@
+1.0.6 2011-08-29 04:00:00
+  - Support PACKAGE BLOCK syntax (VPIT)
+
 1.0.5 2011-08-02 09:45:00
   - Localize $package::VERSION during version discovery (MIYAGAWA)
   - Fix references to Module::Build::ModuleInfo [RT #66133] (DAGOLDEN)
