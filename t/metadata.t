@@ -7,9 +7,18 @@ use lib 't/lib';
 use IO::File;
 use MBTest;
 
+my $undef;
+
 # parse various module $VERSION lines
 # these will be reversed later to create %modules
 my @modules = (
+  $undef => <<'---', # no $VERSION line
+package Simple;
+---
+  $undef => <<'---', # undefined $VERSION
+package Simple;
+our $VERSION;
+---
   '1.23' => <<'---', # declared & defined on same line with 'our'
 package Simple;
 our $VERSION = '1.23';
@@ -242,11 +251,18 @@ foreach my $module ( sort keys %modules ) {
 
     # Test::Builder will prematurely numify objects, so use this form
     my $errs;
-    ok( $pm_info->version eq $expected,
-        "correct module version (expected '$expected')" )
-        or $errs++;
+    my $got = $pm_info->version;
+    if ( defined $expected ) {
+        ok( $got eq $expected,
+            "correct module version (expected '$expected')" )
+            or $errs++;
+    } else {
+        ok( !defined($got),
+            "correct module version (expected undef)" )
+            or $errs++;
+    }
     is( $warnings, '', 'no warnings from parsing' ) or $errs++;
-    diag "Got: '@{[$pm_info->version]}'\nModule contents:\n$module" if $errs;
+    diag "Got: '$got'\nModule contents:\n$module" if $errs;
   }
 }
 
