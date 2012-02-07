@@ -851,7 +851,10 @@ Returns the absolute path to the file.
 
 =item C<< packages_inside() >>
 
-Returns a list of packages.
+Returns a list of packages. Note: this is a raw list of packages
+discovered (or assumed, in the case of C<main>).  It is not
+filtered for C<DB>, C<main> or private packages the way the
+C<provides> method does.
 
 =item C<< pod_inside() >>
 
