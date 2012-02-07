@@ -203,7 +203,7 @@ package Simple v1.2.3_4 {
 );
 my %modules = reverse @modules;
 
-plan tests => 40 + 2 * keys( %modules );
+plan tests => 42 + 2 * keys( %modules );
 
 require_ok('Module::Metadata');
 
@@ -546,5 +546,39 @@ my $exp_pvfd = {
 
 my $got_pvfd = Module::Metadata->package_versions_from_directory('lib');
 
-is_deeply( $got_pvfd, $exp_pvfd, "package_version_from_directory" )
+is_deeply( $got_pvfd, $exp_pvfd, "package_version_from_directory()" )
   or diag explain $got_pvfd;
+
+{
+  my $got_provides = Module::Metadata->provides(dir => 'lib');
+  my $exp_provides = {
+    'Simple' => {
+      'file' => 'lib/Simple.pm',
+      'version' => '0.01'
+    },
+    'Simple::Ex' => {
+      'file' => 'lib/Simple.pm',
+      'version' => '0.02'
+    }
+  };
+
+  is_deeply( $got_provides, $exp_provides, "provides()" )
+    or diag explain $got_provides;
+}
+
+{
+  my $got_provides = Module::Metadata->provides(dir => 'lib', prefix => 'other');
+  my $exp_provides = {
+    'Simple' => {
+      'file' => 'other/Simple.pm',
+      'version' => '0.01'
+    },
+    'Simple::Ex' => {
+      'file' => 'other/Simple.pm',
+      'version' => '0.02'
+    }
+  };
+
+  is_deeply( $got_provides, $exp_provides, "provides()" )
+    or diag explain $got_provides;
+}
