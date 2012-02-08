@@ -169,6 +169,12 @@ sub new_from_module {
     die "provides() takes only one of 'dir' or 'files'\n"
       if $args{dir} && $args{files};
 
+    die "provides() requires a 'version' argument"
+      unless defined $args{version};
+
+    die "provides() does not support version '$args{version}' metadata"
+        unless grep { $args{version} eq $_ } qw/1.4 2/;
+
     $args{prefix} = 'lib' unless defined $args{prefix};
 
     my $p;
@@ -706,7 +712,9 @@ Module::Metadata - Gather package and POD information from perl module files
   my $version = $info->version;
 
   # CPAN META 'provides' field for .pm files in a directory
-  my $provides = Module::Metadata->provides(dir => 'lib');
+  my $provides = Module::Metadata->provides(
+    dir => 'lib', version => 2
+  );
 
 =head1 DESCRIPTION
 
@@ -766,6 +774,16 @@ to generate a CPAN META C<provides> data structure.  It takes key/value
 pairs.  Valid option keys include:
 
 =over
+
+=item version B<(required)>
+
+Specifies which version of the L<CPAN::Meta::Spec> should be used as
+the format of the C<provides> output.  Currently only '1.4' and '2'
+are supported (and their format is identical).  This may change in
+the future as the definition of C<provides> changes.
+
+The C<version> option is required.  If it is omitted or if
+an unsupported version is given, then C<provides> will throw an error.
 
 =item dir
 

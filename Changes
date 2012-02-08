@@ -1,3 +1,6 @@
+  - API of 'provides' changed to require a 'version' argument to future
+    proof the function against CPAN Meta Spec changes
+
 1.0.8 2012-02-07 22:30:00
   - Adds 'provides' method to generate a CPAN META provides data structure
     correctly; use of package_versions_from_directory is discouraged (DAGOLDEN)
