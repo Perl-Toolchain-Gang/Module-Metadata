@@ -1,8 +1,8 @@
-1.0.8 (next)
+1.0.8 2012-02-07 22:30:00
   - Adds 'provides' method to generate a CPAN META provides data structure
     correctly; use of package_versions_from_directory is discouraged (DAGOLDEN)
 
-1.0.7 2001-09-07 12:00:00
+1.0.7 2011-09-07 12:00:00
   - Apply VMS fixes backported from blead (Craig A. Berry)
 
 1.0.6 2011-08-29 04:00:00
