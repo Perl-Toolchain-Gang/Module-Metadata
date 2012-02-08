@@ -1,7 +1,8 @@
+1.0.9 2012-02-08 12:00:00
   - API of 'provides' changed to require a 'version' argument to future
-    proof the function against CPAN Meta Spec changes
+    proof the function against CPAN Meta Spec changes (DAGOLDEN)
   - Fatal errors now use 'croak' instead of 'die'; Carp added as
-    prerequisite
+    prerequisite (DAGOLDEN)
 
 1.0.8 2012-02-07 22:30:00
   - Adds 'provides' method to generate a CPAN META provides data structure
