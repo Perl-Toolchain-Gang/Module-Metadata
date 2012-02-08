@@ -8,6 +8,7 @@ WriteMakefile(
   NAME => 'Module::Metadata',
   VERSION_FROM => 'lib/Module/Metadata.pm',
   PREREQ_PM => {
+    'Carp' => 0,
     'version' => 0.87,
   },
 );

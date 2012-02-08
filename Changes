@@ -1,5 +1,7 @@
   - API of 'provides' changed to require a 'version' argument to future
     proof the function against CPAN Meta Spec changes
+  - Fatal errors now use 'croak' instead of 'die'; Carp added as
+    prerequisite
 
 1.0.8 2012-02-07 22:30:00
   - Adds 'provides' method to generate a CPAN META provides data structure
