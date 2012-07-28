@@ -456,12 +456,16 @@ sub _parse_fh {
     chomp( $line );
     next if $line =~ /^\s*#/;
 
-    $in_pod = ($line =~ /^=(?!cut)/) ? 1 : ($line =~ /^=cut/) ? 0 : $in_pod;
+    my $is_cut;
+    if ( $line =~ /^=(.{0,3})/ ) {
+      $is_cut = $1 eq 'cut';
+      $in_pod = !$is_cut;
+    }
 
     # Would be nice if we could also check $in_string or something too
     last if !$in_pod && $line =~ /^__(?:DATA|END)__$/;
 
-    if ( $in_pod || $line =~ /^=cut/ ) {
+    if ( $in_pod || $is_cut ) {
 
       if ( $line =~ /^=head\d\s+(.+)\s*$/ ) {
 	push( @pod, $1 );
