@@ -488,7 +488,9 @@ sub _parse_fh {
 
       # parse $line to see if it's a $VERSION declaration
       my( $vers_sig, $vers_fullname, $vers_pkg ) =
-	  $self->_parse_version_expression( $line );
+          ($line =~ /VERSION/)
+              ? $self->_parse_version_expression( $line )
+              : ();
 
       if ( $line =~ $PKG_REGEXP ) {
         $pkg = $1;
