@@ -219,7 +219,7 @@ sub new_from_module {
     # separating into primary & alternative candidates
     my( %prime, %alt );
     foreach my $file (@files) {
-      my $mapped_filename = File::Spec->abs2rel( $file, $dir );
+      my $mapped_filename = File::Spec::Unix->abs2rel( $file, $dir );
       my @path = split( /\//, $mapped_filename );
       (my $prime_package = join( '::', @path )) =~ s/\.pm$//;
   
@@ -232,10 +232,12 @@ sub new_from_module {
   
         my $version = $pm_info->version( $package );
   
+        $prime_package = $package if lc($prime_package) eq lc($package);
         if ( $package eq $prime_package ) {
           if ( exists( $prime{$package} ) ) {
             croak "Unexpected conflict in '$package'; multiple versions found.\n";
           } else {
+            $mapped_filename = "$package.pm" if lc("$package.pm") eq lc($mapped_filename);
             $prime{$package}{file} = $mapped_filename;
             $prime{$package}{version} = $version if defined( $version );
           }
