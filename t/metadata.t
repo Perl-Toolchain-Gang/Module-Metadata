@@ -246,7 +246,7 @@ $pm_info = Module::Metadata->new_from_handle( $handle, $file );
 ok( defined( $pm_info ), 'new_from_handle() succeeds' );
 $pm_info = Module::Metadata->new_from_handle( $handle );
 is( $pm_info, undef, "new_from_handle() without filename returns undef" );
-
+close($handle);
 
 # construct from module name, using custom include path
 $pm_info = Module::Metadata->new_from_module(
