@@ -1,3 +1,9 @@
+1.0.10 2012-07-29 19:30:00
+  - Performance improvement: the creation of a Module::Metadata object
+    for a typical module file has been sped up by about 40% (VPIT)
+  - Fix t/metadata.t failure under Cygwin (JDHEDDEN)
+  - Portability fix-ups for new_from_module() and test failures on VMS (CBERRY)
+
 1.0.9 2012-02-08 12:00:00
   - API of 'provides' changed to require a 'version' argument to future
     proof the function against CPAN Meta Spec changes (DAGOLDEN)
