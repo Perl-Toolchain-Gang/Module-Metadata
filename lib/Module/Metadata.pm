@@ -420,7 +420,7 @@ sub _parse_version_expression {
   my $line = shift;
 
   my( $sig, $var, $pkg );
-  if ( $line =~ $VERS_REGEXP ) {
+  if ( $line =~ /$VERS_REGEXP/o ) {
     ( $sig, $var, $pkg ) = $2 ? ( $1, $2, $3 ) : ( $4, $5, $6 );
     if ( $pkg ) {
       $pkg = ($pkg eq '::') ? 'main' : $pkg;
@@ -492,7 +492,7 @@ sub _parse_fh {
               ? $self->_parse_version_expression( $line )
               : ();
 
-      if ( $line =~ $PKG_REGEXP ) {
+      if ( $line =~ /$PKG_REGEXP/o ) {
         $pkg = $1;
         push( @pkgs, $pkg ) unless grep( $pkg eq $_, @pkgs );
         $vers{$pkg} = (defined $2 ? $2 : undef)  unless exists( $vers{$pkg} );
