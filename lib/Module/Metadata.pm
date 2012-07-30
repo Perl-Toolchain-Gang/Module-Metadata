@@ -778,33 +778,43 @@ without executing unsafe code.
 
 =item C<< new_from_file($filename, collect_pod => 1) >>
 
-Construct a C<Module::Metadata> object given the path to a file. Takes an
-optional argument C<collect_pod> which is a boolean that determines whether POD
-data is collected and stored for reference. POD data is not collected by
-default. POD headings are always collected.  Returns undef if the filename
-does not exist.  If the file begins by an UTF-8, UTF-16BE or UTF-16LE
-byte-order mark, then it is skipped before processing, and the content of the
-file is also decoded appropriately starting from perl 5.8.
+Constructs a C<Module::Metadata> object given the path to a file.  Returns
+undef if the filename does not exist.
+
+C<collect_pod> is a optional boolean argument that determines whether POD
+data is collected and stored for reference.  POD data is not collected by
+default.  POD headings are always collected.
+
+If the file begins by an UTF-8, UTF-16BE or UTF-16LE byte-order mark, then
+it is skipped before processing, and the content of the file is also decoded
+appropriately starting from perl 5.8.
 
 =item C<< new_from_handle($handle, $filename, collect_pod => 1) >>
 
 This works just like C<new_from_file>, except that a handle can be provided
-as the first argument.  Note that there is no validation to confirm that the
-handle is a handle or something that can act like one.  Passing something that
-isn't a handle will cause a exception when trying to read from it.  The
-C<filename> argument is mandatory or undef will be returned.  You are
-responsible for setting the decoding layers on C<$handle> if required.
+as the first argument.
+
+Note that there is no validation to confirm that the handle is a handle or
+something that can act like one.  Passing something that isn't a handle will
+cause a exception when trying to read from it.  The C<filename> argument is
+mandatory or undef will be returned.
+
+You are responsible for setting the decoding layers on C<$handle> if
+required.
 
 =item C<< new_from_module($module, collect_pod => 1, inc => \@dirs) >>
 
-Construct a C<Module::Metadata> object given a module or package name. In addition
-to accepting the C<collect_pod> argument as described above, this
-method accepts a C<inc> argument which is a reference to an array of
-of directories to search for the module. If none are given, the
-default is @INC.  Returns undef if the module cannot be found.
-If the file that contains the module begins by an UTF-8, UTF-16BE or UTF-16LE
-byte-order mark, then it is skipped before processing, and the content of the
-file is also decoded appropriately starting from perl 5.8.
+Constructs a C<Module::Metadata> object given a module or package name.
+Returns undef if the module cannot be found.
+
+In addition to accepting the C<collect_pod> argument as described above,
+this method accepts a C<inc> argument which is a reference to an array of
+directories to search for the module.  If none are given, the default is
+@INC.
+
+If the file that contains the module begins by an UTF-8, UTF-16BE or
+UTF-16LE byte-order mark, then it is skipped before processing, and the
+content of the file is also decoded appropriately starting from perl 5.8.
 
 =item C<< find_module_by_name($module, \@dirs) >>
 
@@ -951,7 +961,7 @@ Original code from Module::Build::ModuleInfo by Ken Williams
 Released as Module::Metadata by Matt S Trout (mst) <mst@shadowcat.co.uk> with
 assistance from David Golden (xdg) <dagolden@cpan.org>.
 
-=head1 COPYRIGHT
+=head1 COPYRIGHT & LICENSE
 
 Original code Copyright (c) 2001-2011 Ken Williams.
 Additional code Copyright (c) 2010-2011 Matt Trout and David Golden.
