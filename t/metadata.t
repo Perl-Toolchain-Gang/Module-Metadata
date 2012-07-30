@@ -429,6 +429,9 @@ Simple - It's easy.
 
 Simple Simon
 
+You can find me on the IRC channel
+#simon on irc.perl.org.
+
 =cut
 ---
 $dist->regen;
@@ -478,8 +481,21 @@ $pm_info = Module::Metadata->new_from_module(
     }
     $pod{$section} = $content;
   }
-  is( $pod{NAME}, q|Simple - It's easy.|, 'collected NAME pod section' );
-  is( $pod{AUTHOR}, q|Simple Simon|, 'collected AUTHOR pod section' );
+  my %expected = (
+    NAME   => q|Simple - It's easy.|,
+    AUTHOR => <<'EXPECTED'
+Simple Simon
+
+You can find me on the IRC channel
+#simon on irc.perl.org.
+EXPECTED
+  );
+  for my $text (values %expected) {
+    $text =~ s/^\s+//;
+    $text =~ s/\s+$//;
+  }
+  is( $pod{NAME},   $expected{NAME},   'collected NAME pod section' );
+  is( $pod{AUTHOR}, $expected{AUTHOR}, 'collected AUTHOR pod section' );
 }
 
 {

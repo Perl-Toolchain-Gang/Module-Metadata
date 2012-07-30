@@ -496,7 +496,6 @@ sub _parse_fh {
     my $line_num = $.;
 
     chomp( $line );
-    next if $line =~ /^\s*#/;
 
     my $is_cut;
     if ( $line =~ /^=(.{0,3})/ ) {
@@ -531,6 +530,9 @@ sub _parse_fh {
       $pod_sect = '';
 
     } else {
+
+      # Skip comments in code
+      next if $line =~ /^\s*#/;
 
       # parse $line to see if it's a $VERSION declaration
       my( $vers_sig, $vers_fullname, $vers_pkg ) =
