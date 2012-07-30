@@ -28,6 +28,15 @@ package Simple;
 our $VERSION;
 $VERSION = '1.23';
 ---
+  '1.23' => <<'---', # commented & defined on same line
+package Simple;
+our $VERSION = '1.23'; # our $VERSION = '4.56';
+---
+  '1.23' => <<'---', # commented & defined on separate lines
+package Simple;
+# our $VERSION = '4.56';
+our $VERSION = '1.23';
+---
   '1.23' => <<'---', # use vars
 package Simple;
 use vars qw( $VERSION );
