@@ -507,9 +507,6 @@ sub _parse_fh {
       $in_pod = !$is_cut;
     }
 
-    # Would be nice if we could also check $in_string or something too
-    last if !$in_pod && $line =~ /^__(?:DATA|END)__$/;
-
     if ( $in_pod ) {
 
       if ( $line =~ /^=head[1-4]\s+(.+)\s*$/ ) {
@@ -537,6 +534,9 @@ sub _parse_fh {
 
       # Skip comments in code
       next if $line =~ /^\s*#/;
+
+      # Would be nice if we could also check $in_string or something too
+      last if $line =~ /^__(?:DATA|END)__$/;
 
       # parse $line to see if it's a $VERSION declaration
       my( $vers_sig, $vers_fullname, $vers_pkg ) =
