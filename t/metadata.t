@@ -212,7 +212,7 @@ package Simple v1.2.3_4 {
 );
 my %modules = reverse @modules;
 
-plan tests => 51 + 2 * keys( %modules );
+plan tests => 52 + 2 * keys( %modules );
 
 require_ok('Module::Metadata');
 
@@ -468,13 +468,19 @@ is( $pm_info->pod('NAME'), undef,
 $pm_info = Module::Metadata->new_from_module(
              $dist->name, inc => [ 'lib', @INC ], collect_pod => 1 );
 
-my $name = $pm_info->pod('NAME');
-if ( $name ) {
-  $name =~ s/^\s+//;
-  $name =~ s/\s+$//;
+{
+  my %pod;
+  for my $section (qw(NAME AUTHOR)) {
+    my $content = $pm_info->pod( $section );
+    if ( $content ) {
+      $content =~ s/^\s+//;
+      $content =~ s/\s+$//;
+    }
+    $pod{$section} = $content;
+  }
+  is( $pod{NAME}, q|Simple - It's easy.|, 'collected NAME pod section' );
+  is( $pod{AUTHOR}, q|Simple Simon|, 'collected AUTHOR pod section' );
 }
-is( $name, q|Simple - It's easy.|, 'collected pod section' );
-
 
 {
   # Make sure processing stops after __DATA__

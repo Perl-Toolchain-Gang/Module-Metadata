@@ -507,7 +507,7 @@ sub _parse_fh {
     # Would be nice if we could also check $in_string or something too
     last if !$in_pod && $line =~ /^__(?:DATA|END)__$/;
 
-    if ( $in_pod || $is_cut ) {
+    if ( $in_pod ) {
 
       if ( $line =~ /^=head\d\s+(.+)\s*$/ ) {
 	push( @pod, $1 );
@@ -517,16 +517,20 @@ sub _parse_fh {
         }
 	$pod_sect = $1;
 
-
       } elsif ( $self->{collect_pod} ) {
 	$pod_data .= "$line\n";
 
       }
 
-    } else {
+    } elsif ( $is_cut ) {
 
+      if ( $self->{collect_pod} && length( $pod_data ) ) {
+        $pod{$pod_sect} = $pod_data;
+        $pod_data = '';
+      }
       $pod_sect = '';
-      $pod_data = '';
+
+    } else {
 
       # parse $line to see if it's a $VERSION declaration
       my( $vers_sig, $vers_fullname, $vers_pkg ) =
