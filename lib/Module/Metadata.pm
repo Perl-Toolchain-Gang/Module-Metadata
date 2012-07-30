@@ -61,6 +61,9 @@ my $VERS_REGEXP = qr{ # match a VERSION definition
   =[^=~]  # = but not ==, nor =~
 }x;
 
+my $PODSECT_REGEXP = qr{
+ ^=(cut|pod|head[1-4]|over|item|back|begin|end|for|encoding)\b
+}x;
 
 sub new_from_file {
   my $class    = shift;
@@ -498,7 +501,7 @@ sub _parse_fh {
     chomp( $line );
 
     my $is_cut;
-    if ( $line =~ /^=(.{0,3})/ ) {
+    if ( $line =~ /$PODSECT_REGEXP/o ) {
       $is_cut = $1 eq 'cut';
       $in_pod = !$is_cut;
     }
@@ -508,7 +511,7 @@ sub _parse_fh {
 
     if ( $in_pod ) {
 
-      if ( $line =~ /^=head\d\s+(.+)\s*$/ ) {
+      if ( $line =~ /^=head[1-4]\s+(.+)\s*$/ ) {
 	push( @pod, $1 );
 	if ( $self->{collect_pod} && length( $pod_data ) ) {
           $pod{$pod_sect} = $pod_data;

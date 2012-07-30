@@ -212,7 +212,7 @@ package Simple v1.2.3_4 {
 );
 my %modules = reverse @modules;
 
-plan tests => 52 + 2 * keys( %modules );
+plan tests => 54 + 2 * keys( %modules );
 
 require_ok('Module::Metadata');
 
@@ -496,6 +496,31 @@ EXPECTED
   }
   is( $pod{NAME},   $expected{NAME},   'collected NAME pod section' );
   is( $pod{AUTHOR}, $expected{AUTHOR}, 'collected AUTHOR pod section' );
+}
+
+{
+  # test things that look like POD, but aren't
+$dist->change_file( 'lib/Simple.pm', <<'---' );
+package Simple;
+sub podzol () { 1 }
+sub cute () { 2 }
+my $x
+=podzol
+;
+
+our $VERSION = '1.23';
+
+my $y
+=cute
+;
+
+our $VERSION = '999';
+
+---
+  $dist->regen;
+  $pm_info = Module::Metadata->new_from_file('lib/Simple.pm');
+  is( $pm_info->name, 'Simple', 'found default package' );
+  is( $pm_info->version, '1.23', 'version for default package' );
 }
 
 {
