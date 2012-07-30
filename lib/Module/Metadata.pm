@@ -440,7 +440,47 @@ sub _parse_file {
   my $fh = IO::File->new( $filename )
     or croak( "Can't open '$filename': $!" );
 
+  $self->_handle_bom($fh, $filename);
+
   $self->_parse_fh($fh);
+}
+
+# Look for a UTF-8/UTF-16BE/UTF-16LE BOM at the beginning of the stream.
+# If there's one, then skip it and set the :encoding layer appropriately.
+sub _handle_bom {
+  my ($self, $fh, $filename) = @_;
+
+  my $pos = $fh->getpos;
+  return unless defined $pos;
+
+  my $buf = ' ' x 2;
+  my $count = $fh->read( $buf, length $buf );
+  return unless defined $count and $count >= 2;
+
+  my $encoding;
+  if ( $buf eq "\x{FE}\x{FF}" ) {
+    $encoding = 'UTF-16BE';
+  } elsif ( $buf eq "\x{FF}\x{FE}" ) {
+    $encoding = 'UTF-16LE';
+  } elsif ( $buf eq "\x{EF}\x{BB}" ) {
+    $buf = ' ';
+    $count = $fh->read( $buf, length $buf );
+    if ( defined $count and $count >= 1 and $buf eq "\x{BF}" ) {
+      $encoding = 'UTF-8';
+    }
+  }
+
+  if ( defined $encoding ) {
+    if ( "$]" >= 5.008 ) {
+      # $fh->binmode requires perl 5.10
+      binmode( $fh, ":encoding($encoding)" );
+    }
+  } else {
+    $fh->setpos($pos)
+      or croak( sprintf "Can't reset position to the top of '$filename'" );
+  }
+
+  return $encoding;
 }
 
 sub _parse_fh {
@@ -742,7 +782,9 @@ Construct a C<Module::Metadata> object given the path to a file. Takes an
 optional argument C<collect_pod> which is a boolean that determines whether POD
 data is collected and stored for reference. POD data is not collected by
 default. POD headings are always collected.  Returns undef if the filename
-does not exist.
+does not exist.  If the file begins by an UTF-8, UTF-16BE or UTF-16LE
+byte-order mark, then it is skipped before processing, and the content of the
+file is also decoded appropriately starting from perl 5.8.
 
 =item C<< new_from_handle($handle, $filename, collect_pod => 1) >>
 
@@ -750,7 +792,8 @@ This works just like C<new_from_file>, except that a handle can be provided
 as the first argument.  Note that there is no validation to confirm that the
 handle is a handle or something that can act like one.  Passing something that
 isn't a handle will cause a exception when trying to read from it.  The
-C<filename> argument is mandatory or undef will be returned.
+C<filename> argument is mandatory or undef will be returned.  You are
+responsible for setting the decoding layers on C<$handle> if required.
 
 =item C<< new_from_module($module, collect_pod => 1, inc => \@dirs) >>
 
@@ -759,6 +802,9 @@ to accepting the C<collect_pod> argument as described above, this
 method accepts a C<inc> argument which is a reference to an array of
 of directories to search for the module. If none are given, the
 default is @INC.  Returns undef if the module cannot be found.
+If the file that contains the module begins by an UTF-8, UTF-16BE or UTF-16LE
+byte-order mark, then it is skipped before processing, and the content of the
+file is also decoded appropriately starting from perl 5.8.
 
 =item C<< find_module_by_name($module, \@dirs) >>
 
