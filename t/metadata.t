@@ -502,19 +502,21 @@ EXPECTED
   # test things that look like POD, but aren't
 $dist->change_file( 'lib/Simple.pm', <<'---' );
 package Simple;
-sub podzol () { 1 }
-sub cute () { 2 }
-my $x
-=podzol
-;
 
-our $VERSION = '1.23';
-
-my $y
-=cute
-;
+=YES THIS STARTS POD
 
 our $VERSION = '999';
+
+=cute
+
+our $VERSION = '666';
+
+=cut
+
+*foo
+=*no_this_does_not_start_pod;
+
+our $VERSION = '1.23';
 
 ---
   $dist->regen;

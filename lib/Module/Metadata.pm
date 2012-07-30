@@ -61,10 +61,6 @@ my $VERS_REGEXP = qr{ # match a VERSION definition
   =[^=~]  # = but not ==, nor =~
 }x;
 
-my $PODSECT_REGEXP = qr{
- ^=(cut|pod|head[1-4]|over|item|back|begin|end|for|encoding)\b
-}x;
-
 sub new_from_file {
   my $class    = shift;
   my $filename = File::Spec->rel2abs( shift );
@@ -500,9 +496,14 @@ sub _parse_fh {
 
     chomp( $line );
 
+    # From toke.c : any line that begins by "=X", where X is an alphabetic
+    # character, introduces a POD segment.
     my $is_cut;
-    if ( $line =~ /$PODSECT_REGEXP/o ) {
-      $is_cut = $1 eq 'cut';
+    if ( $line =~ /^=([a-zA-Z].*)/ ) {
+      my $cmd = $1;
+      # Then it goes back to Perl code for "=cutX" where X is a non-alphabetic
+      # character (which includes the newline, but here we chomped it away).
+      $is_cut = $cmd =~ /^cut(?:[^a-zA-Z]|$)/;
       $in_pod = !$is_cut;
     }
 
