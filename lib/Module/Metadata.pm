@@ -543,7 +543,7 @@ sub _parse_fh {
       if ( $line =~ /$PKG_REGEXP/o ) {
         $pkg = $1;
         push( @pkgs, $pkg ) unless grep( $pkg eq $_, @pkgs );
-        $vers{$pkg} = (defined $2 ? $2 : undef)  unless exists( $vers{$pkg} );
+        $vers{$pkg} = $2 unless exists( $vers{$pkg} );
         $need_vers = defined $2 ? 0 : 1;
 
       # VERSION defined with full package spec, i.e. $Module::VERSION
