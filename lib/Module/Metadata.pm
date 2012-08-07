@@ -558,14 +558,6 @@ sub _parse_fh {
 	unless ( defined $vers{$vers_pkg} && length $vers{$vers_pkg} ) {
 	  $vers{$vers_pkg} =
 	    $self->_evaluate_version_line( $vers_sig, $vers_fullname, $line );
-	} else {
-	  # Warn unless the user is using the "$VERSION = eval
-	  # $VERSION" idiom (though there are probably other idioms
-	  # that we should watch out for...)
-	  warn <<"EOM" unless $line =~ /=\s*eval/;
-Package '$vers_pkg' already declared with version '$vers{$vers_pkg}',
-ignoring subsequent declaration on line $line_num.
-EOM
 	}
 
       # first non-comment line in undeclared package main is VERSION
