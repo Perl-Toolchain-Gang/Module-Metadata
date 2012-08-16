@@ -11,7 +11,7 @@ package Module::Metadata;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = '1.000010_002';
+$VERSION = '1.000010_003';
 $VERSION = eval $VERSION;
 
 use Carp qw/croak/;
@@ -583,12 +583,7 @@ sub _parse_fh {
 
 	unless ( defined $vers{$pkg} && length $vers{$pkg} ) {
 	  $vers{$pkg} = $v;
-	} else {
-	  warn <<"EOM";
-Package '$pkg' already declared with version '$vers{$pkg}'
-ignoring new version '$v' on line $line_num.
-EOM
-	}
+	} 
 
       }
 
