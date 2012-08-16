@@ -11,7 +11,7 @@ package Module::Metadata;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = '1.000010_003';
+$VERSION = '1.000011';
 $VERSION = eval $VERSION;
 
 use Carp qw/croak/;
