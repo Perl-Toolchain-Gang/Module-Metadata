@@ -93,16 +93,16 @@ sub new_from_module {
 }
 
 {
-  
+
   my $compare_versions = sub {
     my ($v1, $op, $v2) = @_;
     $v1 = version->new($v1)
       unless UNIVERSAL::isa($v1,'version');
-  
+
     my $eval_str = "\$v1 $op \$v2";
     my $result   = eval $eval_str;
     log_info { "error comparing versions: '$eval_str' $@" } if $@;
-  
+
     return $result;
   };
 
@@ -128,7 +128,7 @@ sub new_from_module {
 
   my $resolve_module_versions = sub {
     my $packages = shift;
-  
+
     my( $file, $version );
     my $err = '';
       foreach my $p ( @$packages ) {
@@ -146,17 +146,17 @@ sub new_from_module {
         }
         $file ||= $p->{file} if defined( $p->{file} );
       }
-  
+
     if ( $err ) {
       $err = "  $file ($version)\n" . $err;
     }
-  
+
     my %result = (
       file    => $file,
       version => $version,
       err     => $err
     );
-  
+
     return \%result;
   };
 
@@ -221,16 +221,16 @@ sub new_from_module {
       my $mapped_filename = File::Spec::Unix->abs2rel( $file, $dir );
       my @path = split( /\//, $mapped_filename );
       (my $prime_package = join( '::', @path )) =~ s/\.pm$//;
-  
+
       my $pm_info = $class->new_from_file( $file );
-  
+
       foreach my $package ( $pm_info->packages_inside ) {
         next if $package eq 'main';  # main can appear numerous times, ignore
         next if $package eq 'DB';    # special debugging package, ignore
         next if grep /^_/, split( /::/, $package ); # private package, ignore
-  
+
         my $version = $pm_info->version( $package );
-  
+
         $prime_package = $package if lc($prime_package) eq lc($package);
         if ( $package eq $prime_package ) {
           if ( exists( $prime{$package} ) ) {
@@ -248,15 +248,15 @@ sub new_from_module {
         }
       }
     }
-  
+
     # Then we iterate over all the packages found above, identifying conflicts
     # and selecting the "best" candidate for recording the file & version
     # for each package.
     foreach my $package ( keys( %alt ) ) {
       my $result = $resolve_module_versions->( $alt{$package} );
-  
+
       if ( exists( $prime{$package} ) ) { # primary package selected
-  
+
         if ( $result->{err} ) {
   	# Use the selected primary package, but there are conflicting
   	# errors among multiple alternative packages that need to be
@@ -266,11 +266,11 @@ sub new_from_module {
   	    "  $prime{$package}{file} ($prime{$package}{version})\n" .
   	    $result->{err}
           };
-  
+
         } elsif ( defined( $result->{version} ) ) {
   	# There is a primary package selected, and exactly one
   	# alternative package
-  
+
   	if ( exists( $prime{$package}{version} ) &&
   	     defined( $prime{$package}{version} ) ) {
   	  # Unless the version of the primary package agrees with the
@@ -286,28 +286,28 @@ sub new_from_module {
   	      "  $result->{file} ($result->{version})\n"
             };
   	  }
-  
+
   	} else {
   	  # The prime package selected has no version so, we choose to
   	  # use any alternative package that does have a version
   	  $prime{$package}{file}    = $result->{file};
   	  $prime{$package}{version} = $result->{version};
   	}
-  
+
         } else {
   	# no alt package found with a version, but we have a prime
   	# package so we use it whether it has a version or not
         }
-  
+
       } else { # No primary package was selected, use the best alternative
-  
+
         if ( $result->{err} ) {
           log_info {
             "Found conflicting versions for package '$package'\n" .
   	    $result->{err}
           };
         }
-  
+
         # Despite possible conflicting versions, we choose to record
         # something rather than nothing
         $prime{$package}{file}    = $result->{file};
@@ -315,17 +315,17 @@ sub new_from_module {
   	  if defined( $result->{version} );
       }
     }
-  
+
     # Normalize versions.  Can't use exists() here because of bug in YAML::Node.
     # XXX "bug in YAML::Node" comment seems irrelvant -- dagolden, 2009-05-18
     for (grep defined $_->{version}, values %prime) {
       $_->{version} = $normalize_version->( $_->{version} );
     }
-  
+
     return \%prime;
   }
-} 
-  
+}
+
 
 sub _init {
   my $class    = shift;
@@ -583,7 +583,7 @@ sub _parse_fh {
 
 	unless ( defined $vers{$pkg} && length $vers{$pkg} ) {
 	  $vers{$pkg} = $v;
-	} 
+	}
 
       }
 

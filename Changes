@@ -5,10 +5,10 @@
 1.0.10_002 2012-08-16 01:00:00 
   - Remove other spurious message (APEIRON)
 
-1.0.10_002 2012-08-15 20:15:00 
+1.0.10_002 2012-08-15 20:15:00
   - APEIRON is an idiot (APEIRON)
 
-1.0.10_001 2012-08-15 20:00:00 
+1.0.10_001 2012-08-15 20:00:00
   - Dev release to test removing a warning about modules not using the
     'eval $VERSION' syntax which causes lots of spew. (APEIRON)
 
