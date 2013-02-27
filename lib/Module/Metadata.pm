@@ -29,11 +29,39 @@ use File::Find qw(find);
 
 my $V_NUM_REGEXP = qr{v?[0-9._]+};  # crudely, a v-string or decimal
 
+my $PKG_FIRST_WORD_REGEXP = qr{ # the FIRST word in a package name
+  [a-zA-Z_]                     # the first word CANNOT start with a digit
+    (?:
+      [\w']?                    # can contain letters, digits, _, or ticks
+      \w                        # But, NO multi-ticks or trailing ticks
+    )*
+}x;
+
+my $PKG_ADDL_WORD_REGEXP = qr{ # the 2nd+ word in a package name
+  \w                           # the 2nd+ word CAN start with digits
+    (?:
+      [\w']?                   # and can contain letters or ticks
+      \w                       # But, NO multi-ticks or trailing ticks
+    )*
+}x;
+
+my $PKG_NAME_REGEXP = qr{ # match a package name
+  (?: :: )?               # a pkg name can start with aristotle
+  $PKG_FIRST_WORD_REGEXP  # a package word
+  (?:
+    (?: :: )+             ### aristotle (allow one or many times)
+    $PKG_ADDL_WORD_REGEXP ### a package word
+  )*                      # ^ zero, one or many times
+  (?:
+    ::                    # allow trailing aristotle
+  )?
+}x;
+
 my $PKG_REGEXP  = qr{   # match a package declaration
   ^[\s\{;]*             # intro chars on a line
   package               # the word 'package'
   \s+                   # whitespace
-  ([\w:]+)              # a package name
+  ($PKG_NAME_REGEXP)    # a package name
   \s*                   # optional whitespace
   ($V_NUM_REGEXP)?        # optional version number
   \s*                   # optional whitesapce
@@ -934,7 +962,10 @@ Returns the absolute path to the file.
 Returns a list of packages. Note: this is a raw list of packages
 discovered (or assumed, in the case of C<main>).  It is not
 filtered for C<DB>, C<main> or private packages the way the
-C<provides> method does.
+C<provides> method does.  Invalid package names are not returned,
+for example "Foo:Bar".  Strange but valid package names are
+returned, for example "Foo::Bar::", and are left up to the caller
+on how to handle.
 
 =item C<< pod_inside() >>
 
