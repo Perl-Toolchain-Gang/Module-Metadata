@@ -741,12 +741,12 @@ sub _evaluate_version_line {
 ############################################################
 
 # accessors
-sub name            { $_[0]->{module}           }
+sub name            { $_[0]->{module}            }
 
-sub filename        { $_[0]->{filename}         }
-sub packages_inside { @{$_[0]->{packages}}      }
-sub pod_inside      { @{$_[0]->{pod_headings}}  }
-sub contains_pod    { $#{$_[0]->{pod_headings}} }
+sub filename        { $_[0]->{filename}          }
+sub packages_inside { @{$_[0]->{packages}}       }
+sub pod_inside      { @{$_[0]->{pod_headings}}   }
+sub contains_pod    { 0+@{$_[0]->{pod_headings}} }
 
 sub version {
     my $self = shift;
