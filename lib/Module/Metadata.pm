@@ -518,6 +518,7 @@ sub _parse_fh {
   my $pkg = 'main';
   my $pod_sect = '';
   my $pod_data = '';
+  my $in_end = 0;
 
   while (defined( my $line = <$fh> )) {
     my $line_num = $.;
@@ -560,11 +561,18 @@ sub _parse_fh {
 
     } else {
 
+      # Skip after __END__
+      next if $in_end;
+
       # Skip comments in code
       next if $line =~ /^\s*#/;
 
       # Would be nice if we could also check $in_string or something too
-      last if $line =~ /^__(?:DATA|END)__$/;
+      if ($line eq '__END__') {
+        $in_end++;
+        next;
+      }
+      last if $line eq '__DATA__';
 
       # parse $line to see if it's a $VERSION declaration
       my( $vers_sig, $vers_fullname, $vers_pkg ) =
