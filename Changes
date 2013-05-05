@@ -1,3 +1,4 @@
+Release history for Module-Metadata
 
   - improved package detection heuristics (thanks, Edward Zborowski!)
   - fix ->contains_pod (RT#84932, Tokuhiro Matsuno)
