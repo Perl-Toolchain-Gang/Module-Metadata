@@ -1,61 +1,9 @@
-use strict;
-use warnings FATAL => 'all';
+BEGIN { -e 'Distar' or system("git clone git://git.shadowcat.co.uk/p5sagit/Distar.git") }
+use lib 'Distar/lib';
+use Distar;
 
-{
-  package MY;
-
-  {
-    no warnings 'once'; push @ExtUtils::MakeMaker::Overridable, 'find_tests';
-  }
-
-  sub find_tests {
-    shift->SUPER::find_tests.' xt/*.t';
-  }
-
-  sub postamble { 'include maint/Makefile.include' }
-}
-
-{
-  no warnings 'redefine';
-  sub WriteMakefile {
-    my %args = @_;
-    ExtUtils::MakeMaker::WriteMakefile(
-      %args,
-      AUTHOR => 'Ken Williams <kwilliams@cpan.org>, Randy W. Sims <RandyS@ThePierianSpring.org>',
-      ABSTRACT_FROM => $args{VERSION_FROM},
-      LICENSE => 'perl',
-    );
-  }
-}
-
-sub manifest_include {
-  use autodie;
-  my @files = @_;
-  my @parts;
-  while (my ($dir, $spec) = splice(@files, 0, 2)) {
-    my $re = ($dir ? $dir.'/' : '').
-      ((ref($spec) eq 'Regexp')
-        ? $spec
-        : !ref($spec)
-          ? ".*\Q${spec}\E"
-          : die "spec must be string or regexp, was: ${spec} (${\ref $spec})");
-    push @parts, $re;
-  }
-  my $final = '^(?!'.join('|', map "${_}\$", @parts).')';
-  open my $skip, '>', 'MANIFEST.SKIP';
-  print $skip "${final}\n";
-  close $skip;
-}
+author 'Ken Williams <kwilliams@cpan.org>, Randy W. Sims <RandyS@ThePierianSpring.org>';
 
 manifest_include(
-  'lib' => '.pm',
-  't' => '.t',
-  't/lib' => '.pm',
-  'xt' => '.t',
-  'xt/lib' => '.pm',
-  '' => '.PL',
-  '' => qr{Changes|MANIFEST|README|META\.yml},
-  'maint' => qr{[^.].*},
+  't/smells-of-vcs' => qr{.*},
 );
-
-1;

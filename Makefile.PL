@@ -7,6 +7,8 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
   NAME => 'Module::Metadata',
   VERSION_FROM => 'lib/Module/Metadata.pm',
+  ABSTRACT_FROM => 'lib/Module/Metadata.pm',
+  LICENSE => 'perl',
   PREREQ_PM => {
     'Carp'        => 0,
     'File::Find'  => 0,
