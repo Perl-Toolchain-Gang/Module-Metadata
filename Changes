@@ -1,5 +1,6 @@
 Release history for Module-Metadata
 
+1.000012 - 2013-05-04
   - improved package detection heuristics (thanks, Edward Zborowski!)
   - fix ->contains_pod (RT#84932, Tokuhiro Matsuno)
   - fix detection of pod after __END__ (RT79656, Tokuhiro Matsuno)
