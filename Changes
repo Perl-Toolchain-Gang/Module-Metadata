@@ -1,3 +1,7 @@
+
+  - improved package detection heuristics (thanks, Edward Zborowski!)
+  - fix ->contains_pod (RT#84932, Tokuhiro Matsuno)
+
 1.0.11 2012-08-16
   - LEONT++ hasn't found any issues with my changes; mark it done (or at
     least ready for smoking). (APEIRON)
