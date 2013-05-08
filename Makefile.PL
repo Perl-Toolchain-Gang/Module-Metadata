@@ -31,4 +31,6 @@ WriteMakefile(
       homepage => 'http://git.shadowcat.co.uk/gitweb/gitweb.cgi?p=p5sagit/Module-Metadata.git',
     },
   },
+
+  INSTALLDIRS => ($] < 5.011 ? 'perl' : 'site'),
 );
