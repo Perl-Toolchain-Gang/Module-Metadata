@@ -1,4 +1,4 @@
-use Test::More;
+use Test::More 0.88;
 use Test::Pod;
 use Test::Pod::Coverage;
 use strict;
