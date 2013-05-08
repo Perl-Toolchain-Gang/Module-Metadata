@@ -1,5 +1,6 @@
 Release history for Module-Metadata
 
+1.000013 - 2013-05-08
   - Fix reliance on recent Test::Builder
   - Make tests perl 5.6 compatible
   - now installs to 'site' for perl 5.12+, as per p5p recommendation
