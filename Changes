@@ -1,5 +1,6 @@
 Release history for Module-Metadata
 
+1.000014 - 2014-05-09
   - Remove "now installs to 'site' for perl 5.12+" from last version
 
 1.000013 - 2013-05-08
