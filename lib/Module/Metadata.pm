@@ -345,7 +345,7 @@ sub new_from_module {
     }
 
     # Normalize versions.  Can't use exists() here because of bug in YAML::Node.
-    # XXX "bug in YAML::Node" comment seems irrelvant -- dagolden, 2009-05-18
+    # XXX "bug in YAML::Node" comment seems irrelevant -- dagolden, 2009-05-18
     for (grep defined $_->{version}, values %prime) {
       $_->{version} = $normalize_version->( $_->{version} );
     }
