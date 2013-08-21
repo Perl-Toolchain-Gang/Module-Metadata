@@ -1,5 +1,7 @@
 Release history for Module-Metadata
 
+  - Change wording about safety/security to satisfy CVE-2013-1437
+
 1.000014 - 2014-05-09
   - Remove "now installs to 'site' for perl 5.12+" from last version
 
