@@ -8,6 +8,7 @@ use autodie;
 chomp(my $LATEST = qx(grep '^[0-9]' Changes | head -1 | awk '{print \$1}'));
 
 my @parts = split /\./, $LATEST;
+splice(@parts, 1, 0, 0) if @parts == 2;
 
 my $OLD_DECIMAL = sprintf('%i.%03i%03i', @parts);
 
