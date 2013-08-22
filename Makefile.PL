@@ -28,8 +28,15 @@ WriteMakefile(
     dynamic_config => 0,
     resources => {
       # r/w: p5sagit@git.shadowcat.co.uk:Module-Metadata.git
-      repository => 'git://git.shadowcat.co.uk/p5sagit/Module-Metadata.git',
-      homepage => 'http://git.shadowcat.co.uk/gitweb/gitweb.cgi?p=p5sagit/Module-Metadata.git',
+      repository => {
+        url => 'git://git.shadowcat.co.uk/p5sagit/Module-Metadata.git',
+        web => 'http://git.shadowcat.co.uk/gitweb/gitweb.cgi?p=p5sagit/Module-Metadata.git',
+        type => 'git',
+      },
+      bugtracker => {
+          mailto => 'bug-Module-Metadata@rt.cpan.org',
+          web => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Module-Metadata',
+      },
     },
   },
 );
