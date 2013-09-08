@@ -23,6 +23,7 @@ WriteMakefile(
       ? ( 'IO::Scalar' => 0 )
       : ()
     ,
+    'perl'        => '5.006',
   },
   META_MERGE => {
     'meta-spec' => { version => 2 },
