@@ -15,6 +15,7 @@ WriteMakefile(
     'File::Spec'  => 0,
     'IO::File'    => 0,
     'strict'      => 0,
+    'warnings'    => 0,
     'vars'        => 0,
     'version'     => 0.87,
     'warnings'    => 0,

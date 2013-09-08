@@ -10,6 +10,8 @@ package Module::Metadata;
 # parrot future to look at other types of modules).
 
 use strict;
+use warnings;
+
 use vars qw($VERSION);
 $VERSION = '1.000016';
 $VERSION = eval $VERSION;
