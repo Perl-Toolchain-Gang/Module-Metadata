@@ -650,7 +650,7 @@ sub _evaluate_version_line {
   # compiletime/runtime issues with local()
   my $vsub;
   $pn++; # everybody gets their own package
-  my $eval = qq{BEGIN { q#  Hide from _packages_inside()
+  my $eval = qq{BEGIN { my \$dummy = q#  Hide from _packages_inside()
     #; package Module::Metadata::_version::p$pn;
     use version;
     no strict;
