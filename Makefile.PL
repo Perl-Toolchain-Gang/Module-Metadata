@@ -10,6 +10,7 @@ WriteMakefile(
   VERSION_FROM => 'lib/Module/Metadata.pm',
   ABSTRACT_FROM => 'lib/Module/Metadata.pm',
   LICENSE => 'perl',
+  MIN_PERL_VERSION => '5.006',
   PREREQ_PM => {
     'Carp'        => 0,
     'File::Find'  => 0,
