@@ -1,6 +1,7 @@
 use strict;
 use warnings FATAL => 'all';
 use ExtUtils::MakeMaker;
+use 5.006;
 
 (do 'maint/Makefile.PL.include' or die $@) unless -f 'META.yml';
 
@@ -23,7 +24,6 @@ WriteMakefile(
       ? ( 'IO::Scalar' => 0 )
       : ()
     ,
-    'perl'        => '5.006',
   },
   META_MERGE => {
     'meta-spec' => { version => 2 },
