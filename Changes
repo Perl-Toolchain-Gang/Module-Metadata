@@ -1,5 +1,6 @@
 Release history for Module-Metadata
 
+1.000018   2013-09-11
   - re-release of detainting fix without unstated non-core test dependencies
 
 1.000017   2013-09-10
