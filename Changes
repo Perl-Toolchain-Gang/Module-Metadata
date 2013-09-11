@@ -1,5 +1,7 @@
 Release history for Module-Metadata
 
+  - detaint version, if needed (RT#88576, Chris Williams)
+
 1.000016   2013-08-21
   - Re-release to fix prereqs and other metadata
 

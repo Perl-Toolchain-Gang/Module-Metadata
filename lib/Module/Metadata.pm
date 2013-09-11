@@ -663,6 +663,8 @@ sub _evaluate_version_line {
       };
   }};
 
+  $eval = $1 if $eval =~ m{^(.+)}s;
+
   local $^W;
   # Try to get the $VERSION
   eval $eval;
