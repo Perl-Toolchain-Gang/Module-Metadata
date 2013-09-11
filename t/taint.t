@@ -3,9 +3,19 @@ use strict;
 use warnings;
 
 use 5.008000;   # for ${^TAINT}
+use Test::More tests => 2;
 use Module::Metadata;
-use Test::More;
-use Test::Fatal;
+use Carp 'croak';
+
+# stolen liberally from Class-Tiny/t/lib/TestUtils.pm - thanks xdg!
+sub exception(&) {
+    my $code = shift;
+    my $success = eval { $code->(); 1 };
+    my $err = $@;
+    return undef if $success;   # original returned ''
+    croak "Execution died, but the error was lost" unless $@;
+    return $@;
+}
 
 ok(${^TAINT}, 'taint flag is set');
 
@@ -17,4 +27,3 @@ is(
     'no exception',
 );
 
-done_testing;
