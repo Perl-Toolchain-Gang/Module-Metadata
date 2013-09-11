@@ -1,5 +1,6 @@
 Release history for Module-Metadata
 
+1.000017   2013-09-10
   - detaint version, if needed (RT#88576, Chris Williams)
 
 1.000016   2013-08-21
