@@ -654,6 +654,7 @@ sub _evaluate_version_line {
     #; package Module::Metadata::_version::p$pn;
     use version;
     no strict;
+    no warnings;
 
       \$vsub = sub {
         local $sigil$var;
