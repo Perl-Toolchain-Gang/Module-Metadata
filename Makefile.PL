@@ -44,8 +44,8 @@ WriteMakefile(
       },
     },
     prereqs => {
-      requires => {
-        test => {
+      test => {
+        requires => {
           'Test::More' => 0,
           'Carp' => 0,
           'Config' => 0,
