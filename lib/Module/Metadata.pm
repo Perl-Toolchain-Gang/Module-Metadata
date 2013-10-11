@@ -87,7 +87,7 @@ my $VERS_REGEXP = qr{ # match a VERSION definition
     $VARNAME_REGEXP           # without parens
   )
   \s*
-  =[^=~]  # = but not ==, nor =~
+  =[^=~>]  # = but not ==, nor =~, nor =>
 }x;
 
 sub new_from_file {
