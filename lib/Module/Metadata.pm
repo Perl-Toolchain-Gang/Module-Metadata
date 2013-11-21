@@ -783,6 +783,18 @@ sub pod {
     }
 }
 
+sub is_indexable {
+  my ($self, $package) = @_;
+
+  my @indexable_packages = grep { $_ ne 'main' } $self->packages_inside;
+
+  # check for specific package, if provided
+  return !! grep { $_ eq $package } @indexable_packages if $package;
+
+  # otherwise, check for any indexable packages at all
+  return !! @indexable_packages;
+}
+
 1;
 
 =head1 NAME
@@ -992,6 +1004,13 @@ Returns true if there is any POD in the file.
 =item C<< pod($section) >>
 
 Returns the POD data in the given section.
+
+=item C<< is_indexable($package) >> or C<< is_indexable() >>
+
+Returns a boolean indicating whether the package (if provided) or any package
+(otherwise) is eligible for indexing by PAUSE, the Perl Authors Upload Server.
+Note This only checks for valid C<package> declarations, and does not take any
+ownership information into account.
 
 =back
 

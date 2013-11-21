@@ -259,7 +259,7 @@ package Simple-Edward;
 );
 my %pkg_names = reverse @pkg_names;
 
-plan tests => 54 + (2 * keys( %modules )) + (2 * keys( %pkg_names ));
+plan tests => 63 + (2 * keys( %modules )) + (2 * keys( %pkg_names ));
 
 require_ok('Module::Metadata');
 
@@ -724,6 +724,9 @@ $VERSION = '0.01';
   is( $pm_info->version, undef, 'version for default package' );
   is( $pm_info->version('simple'), '0.01', 'version for lower-case package' );
   is( $pm_info->version('Simple'), undef, 'version for capitalized package' );
+  ok( $pm_info->is_indexable(), 'an indexable package is found' );
+  ok( $pm_info->is_indexable('simple'), 'the simple package is indexable' );
+  ok( !$pm_info->is_indexable('Simple'), 'the Simple package would not be indexed' );
 
   $dist->change_file( 'lib/Simple.pm', <<'---' );
 package simple;
@@ -741,4 +744,20 @@ $VERSION = '0.03';
   is( $pm_info->version('simple'), '0.01', 'version for lower-case package' );
   is( $pm_info->version('Simple'), '0.02', 'version for capitalized package' );
   is( $pm_info->version('SiMpLe'), '0.03', 'version for mixed-case package' );
+  ok( $pm_info->is_indexable('simple'), 'the simple package is indexable' );
+  ok( $pm_info->is_indexable('Simple'), 'the Simple package is indexable' );
+
+  $dist->change_file( 'lib/Simple.pm', <<'---' );
+package ## hide from PAUSE
+   simple;
+$VERSION = '0.01';
+---
+
+  $dist->regen;
+
+  $pm_info = Module::Metadata->new_from_file('lib/Simple.pm');
+  is( $pm_info->name, undef, 'no package names found' );
+  ok( !$pm_info->is_indexable('simple'), 'the simple package would not be indexed' );
+  ok( !$pm_info->is_indexable('Simple'), 'the Simple package would not be indexed' );
+  ok( !$pm_info->is_indexable(), 'no indexable package is found' );
 }
