@@ -956,7 +956,7 @@ Log::Contextual has already been loaded, otherwise simply calls warn.
 =item C<< name() >>
 
 Returns the name of the package represented by this module. If there
-are more than one packages, it makes a best guess based on the
+is more than one package, it makes a best guess based on the
 filename. If it's a script (i.e. not a *.pm) the package name is
 'main'.
 
