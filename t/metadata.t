@@ -5,6 +5,7 @@
 use strict;
 use warnings;
 use lib 't/lib';
+use Test::More;
 use IO::File;
 use MBTest;
 
