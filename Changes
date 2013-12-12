@@ -2,95 +2,95 @@ Release history for Module-Metadata
 
   - new is_indexable() object method (ether, RT#84357)
 
-1.000019   2013-10-06
+1.000019 - 2013-10-06
   - warnings now disabled inside during the evaluation of generated version
     sub (BinGOs, RT#89282)
 
-1.000018   2013-09-11
+1.000018 - 2013-09-11
   - re-release of detainting fix without unstated non-core test dependencies
 
-1.000017   2013-09-10
+1.000017 - 2013-09-10
   - detaint version, if needed (RT#88576, Chris Williams)
 
-1.000016   2013-08-21
+1.000016 - 2013-08-21
   - Re-release to fix prereqs and other metadata
 
-1.000015   2013-08-21
+1.000015 - 2013-08-21
   - Change wording about safety/security to satisfy CVE-2013-1437
 
-1.000014   2013-05-09
+1.000014 - 2013-05-09
   - Remove "now installs to 'site' for perl 5.12+" from last version
 
-1.000013   2013-05-08
+1.000013 - 2013-05-08
   - Fix reliance on recent Test::Builder
   - Make tests perl 5.6 compatible
   - now installs to 'site' for perl 5.12+, as per p5p recommendation
 
-1.000012   2013-05-04
+1.000012 - 2013-05-04
   - improved package detection heuristics (thanks, Edward Zborowski!)
   - fix ->contains_pod (RT#84932, Tokuhiro Matsuno)
   - fix detection of pod after __END__ (RT79656, Tokuhiro Matsuno)
 
-1.000011   2012-08-16
+1.000011 - 2012-08-16
   - LEONT++ hasn't found any issues with my changes; mark it done (or at
     least ready for smoking). (APEIRON)
 
-1.000010_003   2012-08-16 01:00:00
+1.000010_003 - 2012-08-16 01:00:00
   - Remove other spurious message (APEIRON)
 
-1.000010_002   2012-08-15 20:15:00
+1.000010_002 - 2012-08-15 20:15:00
   - APEIRON is an idiot (APEIRON)
 
-1.000010_001   2012-08-15 20:00:00
+1.000010_001 - 2012-08-15 20:00:00
   - Dev release to test removing a warning about modules not using the
     'eval $VERSION' syntax which causes lots of spew. (APEIRON)
 
-1.000010   2012-07-29 19:30:00
+1.000010 - 2012-07-29 19:30:00
   - Performance improvement: the creation of a Module::Metadata object
     for a typical module file has been sped up by about 40% (VPIT)
   - Fix t/metadata.t failure under Cygwin (JDHEDDEN)
   - Portability fix-ups for new_from_module() and test failures on VMS (CBERRY)
 
-1.000009   2012-02-08 12:00:00
+1.000009 - 2012-02-08 12:00:00
   - API of 'provides' changed to require a 'version' argument to future
     proof the function against CPAN Meta Spec changes (DAGOLDEN)
   - Fatal errors now use 'croak' instead of 'die'; Carp added as
     prerequisite (DAGOLDEN)
 
-1.000008   2012-02-07 22:30:00
+1.000008 - 2012-02-07 22:30:00
   - Adds 'provides' method to generate a CPAN META provides data structure
     correctly; use of package_versions_from_directory is discouraged (DAGOLDEN)
 
-1.000007   2011-09-07 12:00:00
+1.000007 - 2011-09-07 12:00:00
   - Apply VMS fixes backported from blead (Craig A. Berry)
 
-1.000006   2011-08-29 04:00:00
+1.000006 - 2011-08-29 04:00:00
   - Support PACKAGE BLOCK syntax (VPIT)
 
-1.000005   2011-08-02 09:45:00
+1.000005 - 2011-08-02 09:45:00
   - Localize $package::VERSION during version discovery (MIYAGAWA)
   - Fix references to Module::Build::ModuleInfo [RT #66133] (DAGOLDEN)
   - Added 'new_from_handle()' method [RT #68875] (DAGOLDEN)
   - Improved documentation (SYNOPSIS, broke out class/object method, and
     other minor edits) (DAGOLDEN)
 
-1.000004   2011-02-03 07:55:00
+1.000004 - 2011-02-03 07:55:00
   - Fix broken metadata.t when @INC has relative paths (JJORE)
 
-1.000003   2011-01-06 21:35:00
+1.000003 - 2011-01-06 21:35:00
   - Pod cleanup (DAGOLDEN)
 
-1.000002   2010-12-10 12:00:00
+1.000002 - 2010-12-10 12:00:00
   - Remove Module::Metadata::Version and depend directly on version.pm
     (DAGOLDEN)
   - Munge versions that fail even "lax" version number rules to try
     to return something sensible (DAGOLDEN)
 
-1.000001   2010-07-09 00:52:37
+1.000001 - 2010-07-09 00:52:37
   - fix build code to prevent Author.PL being mistakenly run during make
     and add some extra author-side tools (MSTROUT)
 
-1.000000   2010-07-07
+1.000000 - 2010-07-07
   - Initial release (MSTROUT)
   - Code extracted from Module::Build + Module::Build::Version (MSTROUT)
   - Tests extracted from Module::Build (DAGOLDEN)
