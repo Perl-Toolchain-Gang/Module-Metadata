@@ -383,12 +383,14 @@ sub _init {
 
   my $self = bless(\%data, $class);
 
-  if ( $handle ) {
-    $self->_parse_fh($handle);
+  if ( not $handle ) {
+    my $filename = $self->{filename};
+    $handle = IO::File->new( $filename )
+      or croak( "Can't open '$filename': $!" );
+
+    $self->_handle_bom($handle, $filename);
   }
-  else {
-    $self->_parse_file();
-  }
+  $self->_parse_fh($handle);
 
   unless($self->{module} and length($self->{module})) {
     my ($v, $d, $f) = File::Spec->splitpath($self->{filename});
@@ -461,17 +463,6 @@ sub _parse_version_expression {
   return ( $sig, $var, $pkg );
 }
 
-sub _parse_file {
-  my $self = shift;
-
-  my $filename = $self->{filename};
-  my $fh = IO::File->new( $filename )
-    or croak( "Can't open '$filename': $!" );
-
-  $self->_handle_bom($fh, $filename);
-
-  $self->_parse_fh($fh);
-}
 
 # Look for a UTF-8/UTF-16BE/UTF-16LE BOM at the beginning of the stream.
 # If there's one, then skip it and set the :encoding layer appropriately.
