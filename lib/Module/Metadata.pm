@@ -162,19 +162,19 @@ sub new_from_module {
     my $err = '';
       foreach my $p ( @$packages ) {
         if ( defined( $p->{version} ) ) {
-  	if ( defined( $version ) ) {
-   	  if ( $compare_versions->( $version, '!=', $p->{version} ) ) {
-  	    $err .= "  $p->{file} ($p->{version})\n";
-  	  } else {
-  	    # same version declared multiple times, ignore
-  	  }
-  	} else {
-  	  $file    = $p->{file};
-  	  $version = $p->{version};
-  	}
+          if ( defined( $version ) ) {
+            if ( $compare_versions->( $version, '!=', $p->{version} ) ) {
+              $err .= "  $p->{file} ($p->{version})\n";
+            } else {
+              # same version declared multiple times, ignore
+            }
+          } else {
+            $file    = $p->{file};
+            $version = $p->{version};
+          }
         }
-        $file ||= $p->{file} if defined( $p->{file} );
-      }
+      $file ||= $p->{file} if defined( $p->{file} );
+    }
 
     if ( $err ) {
       $err = "  $file ($version)\n" . $err;
@@ -287,45 +287,45 @@ sub new_from_module {
       if ( exists( $prime{$package} ) ) { # primary package selected
 
         if ( $result->{err} ) {
-  	# Use the selected primary package, but there are conflicting
-  	# errors among multiple alternative packages that need to be
-  	# reported
+        # Use the selected primary package, but there are conflicting
+        # errors among multiple alternative packages that need to be
+        # reported
           log_info {
-  	    "Found conflicting versions for package '$package'\n" .
-  	    "  $prime{$package}{file} ($prime{$package}{version})\n" .
-  	    $result->{err}
+            "Found conflicting versions for package '$package'\n" .
+            "  $prime{$package}{file} ($prime{$package}{version})\n" .
+            $result->{err}
           };
 
         } elsif ( defined( $result->{version} ) ) {
-  	# There is a primary package selected, and exactly one
-  	# alternative package
+        # There is a primary package selected, and exactly one
+        # alternative package
 
-  	if ( exists( $prime{$package}{version} ) &&
-  	     defined( $prime{$package}{version} ) ) {
-  	  # Unless the version of the primary package agrees with the
-  	  # version of the alternative package, report a conflict
-  	  if ( $compare_versions->(
+        if ( exists( $prime{$package}{version} ) &&
+             defined( $prime{$package}{version} ) ) {
+          # Unless the version of the primary package agrees with the
+          # version of the alternative package, report a conflict
+        if ( $compare_versions->(
                  $prime{$package}{version}, '!=', $result->{version}
                )
              ) {
 
             log_info {
               "Found conflicting versions for package '$package'\n" .
-  	      "  $prime{$package}{file} ($prime{$package}{version})\n" .
-  	      "  $result->{file} ($result->{version})\n"
+              "  $prime{$package}{file} ($prime{$package}{version})\n" .
+              "  $result->{file} ($result->{version})\n"
             };
-  	  }
-
-  	} else {
-  	  # The prime package selected has no version so, we choose to
-  	  # use any alternative package that does have a version
-  	  $prime{$package}{file}    = $result->{file};
-  	  $prime{$package}{version} = $result->{version};
-  	}
+          }
 
         } else {
-  	# no alt package found with a version, but we have a prime
-  	# package so we use it whether it has a version or not
+          # The prime package selected has no version so, we choose to
+          # use any alternative package that does have a version
+          $prime{$package}{file}    = $result->{file};
+          $prime{$package}{version} = $result->{version};
+        }
+
+        } else {
+        # no alt package found with a version, but we have a prime
+        # package so we use it whether it has a version or not
         }
 
       } else { # No primary package was selected, use the best alternative
@@ -333,7 +333,7 @@ sub new_from_module {
         if ( $result->{err} ) {
           log_info {
             "Found conflicting versions for package '$package'\n" .
-  	    $result->{err}
+            $result->{err}
           };
         }
 
@@ -341,7 +341,7 @@ sub new_from_module {
         # something rather than nothing
         $prime{$package}{file}    = $result->{file};
         $prime{$package}{version} = $result->{version}
-  	  if defined( $result->{version} );
+          if defined( $result->{version} );
       }
     }
 
@@ -423,9 +423,9 @@ sub _do_find_module {
   foreach my $dir ( @$dirs ) {
     my $testfile = File::Spec->catfile($dir, $file);
     return [ File::Spec->rel2abs( $testfile ), $dir ]
-	if -e $testfile and !-d _;  # For stuff like ExtUtils::xsubpp
+      if -e $testfile and !-d _;  # For stuff like ExtUtils::xsubpp
     return [ File::Spec->rel2abs( "$testfile.pm" ), $dir ]
-	if -e "$testfile.pm";
+      if -e "$testfile.pm";
   }
   return;
 }
@@ -540,15 +540,15 @@ sub _parse_fh {
     if ( $in_pod ) {
 
       if ( $line =~ /^=head[1-4]\s+(.+)\s*$/ ) {
-	push( @pod, $1 );
-	if ( $self->{collect_pod} && length( $pod_data ) ) {
+        push( @pod, $1 );
+        if ( $self->{collect_pod} && length( $pod_data ) ) {
           $pod{$pod_sect} = $pod_data;
           $pod_data = '';
         }
-	$pod_sect = $1;
+        $pod_sect = $1;
 
       } elsif ( $self->{collect_pod} ) {
-	$pod_data .= "$line\n";
+        $pod_data .= "$line\n";
 
       }
 
@@ -589,43 +589,36 @@ sub _parse_fh {
 
       # VERSION defined with full package spec, i.e. $Module::VERSION
       } elsif ( $vers_fullname && $vers_pkg ) {
-	push( @pkgs, $vers_pkg ) unless grep( $vers_pkg eq $_, @pkgs );
-	$need_vers = 0 if $vers_pkg eq $pkg;
+        push( @pkgs, $vers_pkg ) unless grep( $vers_pkg eq $_, @pkgs );
+        $need_vers = 0 if $vers_pkg eq $pkg;
 
-	unless ( defined $vers{$vers_pkg} && length $vers{$vers_pkg} ) {
-	  $vers{$vers_pkg} =
-	    $self->_evaluate_version_line( $vers_sig, $vers_fullname, $line );
-	}
+        unless ( defined $vers{$vers_pkg} && length $vers{$vers_pkg} ) {
+        $vers{$vers_pkg} = $self->_evaluate_version_line( $vers_sig, $vers_fullname, $line );
+      }
 
       # first non-comment line in undeclared package main is VERSION
       } elsif ( !exists($vers{main}) && $pkg eq 'main' && $vers_fullname ) {
-	$need_vers = 0;
-	my $v =
-	  $self->_evaluate_version_line( $vers_sig, $vers_fullname, $line );
-	$vers{$pkg} = $v;
-	push( @pkgs, 'main' );
+        $need_vers = 0;
+        my $v = $self->_evaluate_version_line( $vers_sig, $vers_fullname, $line );
+        $vers{$pkg} = $v;
+        push( @pkgs, 'main' );
 
       # first non-comment line in undeclared package defines package main
       } elsif ( !exists($vers{main}) && $pkg eq 'main' && $line =~ /\w+/ ) {
-	$need_vers = 1;
-	$vers{main} = '';
-	push( @pkgs, 'main' );
+        $need_vers = 1;
+        $vers{main} = '';
+        push( @pkgs, 'main' );
 
       # only keep if this is the first $VERSION seen
       } elsif ( $vers_fullname && $need_vers ) {
-	$need_vers = 0;
-	my $v =
-	  $self->_evaluate_version_line( $vers_sig, $vers_fullname, $line );
+        $need_vers = 0;
+        my $v = $self->_evaluate_version_line( $vers_sig, $vers_fullname, $line );
 
-
-	unless ( defined $vers{$pkg} && length $vers{$pkg} ) {
-	  $vers{$pkg} = $v;
-	}
-
+        unless ( defined $vers{$pkg} && length $vers{$pkg} ) {
+          $vers{$pkg} = $v;
+        }
       }
-
     }
-
   }
 
   if ( $self->{collect_pod} && length($pod_data) ) {
@@ -765,10 +758,10 @@ sub version {
     my $mod  = shift || $self->{module};
     my $vers;
     if ( defined( $mod ) && length( $mod ) &&
-	 exists( $self->{versions}{$mod} ) ) {
-	return $self->{versions}{$mod};
+         exists( $self->{versions}{$mod} ) ) {
+        return $self->{versions}{$mod};
     } else {
-	return undef;
+        return undef;
     }
 }
 
@@ -776,10 +769,10 @@ sub pod {
     my $self = shift;
     my $sect = shift;
     if ( defined( $sect ) && length( $sect ) &&
-	 exists( $self->{pod}{$sect} ) ) {
-	return $self->{pod}{$sect};
+         exists( $self->{pod}{$sect} ) ) {
+        return $self->{pod}{$sect};
     } else {
-	return undef;
+        return undef;
     }
 }
 

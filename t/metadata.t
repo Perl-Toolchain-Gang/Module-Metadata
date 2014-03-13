@@ -282,7 +282,7 @@ $dist->chdir_in;
 
 # fail on invalid module name
 my $pm_info = Module::Metadata->new_from_module(
-		'Foo::Bar', inc => [] );
+                'Foo::Bar', inc => [] );
 ok( !defined( $pm_info ), 'fail if can\'t find module by module name' );
 
 
@@ -307,7 +307,7 @@ close($handle);
 
 # construct from module name, using custom include path
 $pm_info = Module::Metadata->new_from_module(
-	     $dist->name, inc => [ 'lib', @INC ] );
+             $dist->name, inc => [ 'lib', @INC ] );
 ok( defined( $pm_info ), 'new_from_module() succeeds' );
 
 
@@ -478,7 +478,7 @@ foreach my $script ( @scripts ) {
   $dist->change_file( 'bin/simple.plx', $script );
   $dist->regen;
   $pm_info = Module::Metadata->new_from_file(
-	       File::Spec->catfile( 'bin', 'simple.plx' ) );
+               File::Spec->catfile( 'bin', 'simple.plx' ) );
 
   is( $pm_info->version, '0.01', "correct script version ($i of $n)" );
   $i++;
