@@ -451,16 +451,16 @@ sub _parse_version_expression {
   my $self = shift;
   my $line = shift;
 
-  my( $sig, $var, $pkg );
+  my( $sigil, $variable_name, $package);
   if ( $line =~ /$VERS_REGEXP/o ) {
-    ( $sig, $var, $pkg ) = $2 ? ( $1, $2, $3 ) : ( $4, $5, $6 );
-    if ( $pkg ) {
-      $pkg = ($pkg eq '::') ? 'main' : $pkg;
-      $pkg =~ s/::$//;
+    ( $sigil, $variable_name, $package) = $2 ? ( $1, $2, $3 ) : ( $4, $5, $6 );
+    if ( $package ) {
+      $package = ($package eq '::') ? 'main' : $package;
+      $package =~ s/::$//;
     }
   }
 
-  return ( $sig, $var, $pkg );
+  return ( $sigil, $variable_name, $package );
 }
 
 
@@ -506,8 +506,8 @@ sub _parse_fh {
   my ($self, $fh) = @_;
 
   my( $in_pod, $seen_end, $need_vers ) = ( 0, 0, 0 );
-  my( @pkgs, %vers, %pod, @pod );
-  my $pkg = 'main';
+  my( @packages, %vers, %pod, @pod );
+  my $package = 'main';
   my $pod_sect = '';
   my $pod_data = '';
   my $in_end = 0;
@@ -567,46 +567,46 @@ sub _parse_fh {
       last if $line eq '__DATA__';
 
       # parse $line to see if it's a $VERSION declaration
-      my( $vers_sig, $vers_fullname, $vers_pkg ) =
+      my( $version_sigil, $version_fullname, $version_package ) =
           ($line =~ /VERSION/)
               ? $self->_parse_version_expression( $line )
               : ();
 
       if ( $line =~ /$PKG_REGEXP/o ) {
-        $pkg = $1;
-        push( @pkgs, $pkg ) unless grep( $pkg eq $_, @pkgs );
-        $vers{$pkg} = $2 unless exists( $vers{$pkg} );
+        $package = $1;
+        push( @packages, $package ) unless grep( $package eq $_, @packages );
+        $vers{$package} = $2 unless exists( $vers{$package} );
         $need_vers = defined $2 ? 0 : 1;
 
       # VERSION defined with full package spec, i.e. $Module::VERSION
-      } elsif ( $vers_fullname && $vers_pkg ) {
-        push( @pkgs, $vers_pkg ) unless grep( $vers_pkg eq $_, @pkgs );
-        $need_vers = 0 if $vers_pkg eq $pkg;
+      } elsif ( $version_fullname && $version_package ) {
+        push( @packages, $version_package ) unless grep( $version_package eq $_, @packages );
+        $need_vers = 0 if $version_package eq $package;
 
-        unless ( defined $vers{$vers_pkg} && length $vers{$vers_pkg} ) {
-        $vers{$vers_pkg} = $self->_evaluate_version_line( $vers_sig, $vers_fullname, $line );
+        unless ( defined $vers{$version_package} && length $vers{$version_package} ) {
+        $vers{$version_package} = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
       }
 
       # first non-comment line in undeclared package main is VERSION
-      } elsif ( !exists($vers{main}) && $pkg eq 'main' && $vers_fullname ) {
+      } elsif ( !exists($vers{main}) && $package eq 'main' && $version_fullname ) {
         $need_vers = 0;
-        my $v = $self->_evaluate_version_line( $vers_sig, $vers_fullname, $line );
-        $vers{$pkg} = $v;
-        push( @pkgs, 'main' );
+        my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
+        $vers{$package} = $v;
+        push( @packages, 'main' );
 
       # first non-comment line in undeclared package defines package main
-      } elsif ( !exists($vers{main}) && $pkg eq 'main' && $line =~ /\w+/ ) {
+      } elsif ( !exists($vers{main}) && $package eq 'main' && $line =~ /\w+/ ) {
         $need_vers = 1;
         $vers{main} = '';
-        push( @pkgs, 'main' );
+        push( @packages, 'main' );
 
       # only keep if this is the first $VERSION seen
-      } elsif ( $vers_fullname && $need_vers ) {
+      } elsif ( $version_fullname && $need_vers ) {
         $need_vers = 0;
-        my $v = $self->_evaluate_version_line( $vers_sig, $vers_fullname, $line );
+        my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
 
-        unless ( defined $vers{$pkg} && length $vers{$pkg} ) {
-          $vers{$pkg} = $v;
+        unless ( defined $vers{$package} && length $vers{$package} ) {
+          $vers{$package} = $v;
         }
       }
     }
@@ -617,7 +617,7 @@ sub _parse_fh {
   }
 
   $self->{versions} = \%vers;
-  $self->{packages} = \@pkgs;
+  $self->{packages} = \@packages;
   $self->{pod} = \%pod;
   $self->{pod_headings} = \@pod;
 }
@@ -626,7 +626,7 @@ sub _parse_fh {
 my $pn = 0;
 sub _evaluate_version_line {
   my $self = shift;
-  my( $sigil, $var, $line ) = @_;
+  my( $sigil, $variable_name, $line ) = @_;
 
   # Some of this code came from the ExtUtils:: hierarchy.
 
@@ -641,10 +641,10 @@ sub _evaluate_version_line {
     no warnings;
 
       \$vsub = sub {
-        local $sigil$var;
-        \$$var=undef;
+        local $sigil$variable_name;
+        \$$variable_name=undef;
         $line;
-        \$$var
+        \$$variable_name
       };
   }};
 
