@@ -17,7 +17,12 @@ $VERSION = eval $VERSION;
 
 use Carp qw/croak/;
 use File::Spec;
-use IO::File;
+BEGIN {
+       # Try really hard to not depend ony any DynaLoaded module, such as IO::File or Fcntl
+       eval {
+               require Fcntl; Fcntl->import('SEEK_SET'); 1;
+       } or *SEEK_SET = sub { 0 }
+}
 use version 0.87;
 BEGIN {
   if ($INC{'Log/Contextual.pm'}) {
@@ -385,7 +390,7 @@ sub _init {
 
   if ( not $handle ) {
     my $filename = $self->{filename};
-    $handle = IO::File->new( $filename )
+    open $handle, '<', $filename
       or croak( "Can't open '$filename': $!" );
 
     $self->_handle_bom($handle, $filename);
@@ -463,17 +468,16 @@ sub _parse_version_expression {
   return ( $sigil, $variable_name, $package );
 }
 
-
 # Look for a UTF-8/UTF-16BE/UTF-16LE BOM at the beginning of the stream.
 # If there's one, then skip it and set the :encoding layer appropriately.
 sub _handle_bom {
   my ($self, $fh, $filename) = @_;
 
-  my $pos = $fh->getpos;
+  my $pos = tell $fh;
   return unless defined $pos;
 
   my $buf = ' ' x 2;
-  my $count = $fh->read( $buf, length $buf );
+  my $count = read $fh, $buf, length $buf;
   return unless defined $count and $count >= 2;
 
   my $encoding;
@@ -483,7 +487,7 @@ sub _handle_bom {
     $encoding = 'UTF-16LE';
   } elsif ( $buf eq "\x{EF}\x{BB}" ) {
     $buf = ' ';
-    $count = $fh->read( $buf, length $buf );
+    $count = read $fh, $buf, length $buf;
     if ( defined $count and $count >= 1 and $buf eq "\x{BF}" ) {
       $encoding = 'UTF-8';
     }
@@ -491,11 +495,10 @@ sub _handle_bom {
 
   if ( defined $encoding ) {
     if ( "$]" >= 5.008 ) {
-      # $fh->binmode requires perl 5.10
       binmode( $fh, ":encoding($encoding)" );
     }
   } else {
-    $fh->setpos($pos)
+    seek $fh, $pos, SEEK_SET
       or croak( sprintf "Can't reset position to the top of '$filename'" );
   }
 

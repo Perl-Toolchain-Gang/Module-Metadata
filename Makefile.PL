@@ -17,7 +17,6 @@ WriteMakefile(
     'Carp'        => 0,
     'File::Find'  => 0,
     'File::Spec'  => 0,
-    'IO::File'    => 0,
     'strict'      => 0,
     'warnings'    => 0,
     'vars'        => 0,
