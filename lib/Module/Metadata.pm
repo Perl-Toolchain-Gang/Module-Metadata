@@ -10,7 +10,6 @@ package Module::Metadata;
 # perl modules (assuming this may be expanded in the distant
 # parrot future to look at other types of modules).
 
-sub __clean_eval { eval $_[0] }
 use strict;
 use warnings;
 
@@ -25,6 +24,9 @@ BEGIN {
        } or *SEEK_SET = sub { 0 }
 }
 use version 0.87;
+use Module::Metadata::ExtractVersion 'eval_version';
+
+
 BEGIN {
   if ($INC{'Log/Contextual.pm'}) {
     require "Log/Contextual/WarnLogger.pm"; # Hide from AutoPrereqs
@@ -600,13 +602,23 @@ sub _parse_fh {
       $need_vers = 0 if $version_package eq $package;
 
       unless ( defined $vers_raw{$version_package}[0] && length $vers_raw{$version_package}[0] ) {
-        $vers_raw{$version_package} = [ $self->_evaluate_version_line( $version_sigil, $version_fullname, $line ), $line ];
+        $vers_raw{$version_package} = [ eval_version(
+          sigil => $version_sigil,
+          variable_name => $version_fullname,
+          string => $line,
+          filename => $self->{filename},
+        ), $line ];
       }
 
     # first non-comment line in undeclared package main is VERSION
     } elsif ( $package eq 'main' && $version_fullname && !exists($vers_raw{main}[0]) ) {
       $need_vers = 0;
-      my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
+      my $v = eval_version(
+        sigil => $version_sigil,
+        variable_name => $version_fullname,
+        string => $line,
+        filename => $self->{filename},
+      );
       $vers_raw{$package} = [ $v, $line ];
       push( @packages, 'main' );
 
@@ -619,9 +631,14 @@ sub _parse_fh {
     # only keep if this is the first $VERSION seen
     } elsif ( $version_fullname && $need_vers ) {
       $need_vers = 0;
-      my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
+      my $v = eval_version(
+        sigil => $version_sigil,
+        variable_name => $version_fullname,
+        string => $line,
+        filename => $self->{filename},
+      );
 
-      unless ( exists $vers_raw{$package}[0]  && length $vers{$package}[0] ) {
+      unless ( exists $vers_raw{$package}[0]  && length $vers_raw{$package}[0] ) {
         $vers_raw{$package} = [ $v, $line ];
       }
     }
@@ -650,51 +667,6 @@ sub _parse_fh {
   $self->{packages} = \@packages;
   $self->{pod} = \%pod;
   $self->{pod_headings} = \@pod;
-}
-
-{
-my $pn = 0;
-sub _evaluate_version_line {
-  my $self = shift;
-  my( $sigil, $variable_name, $line ) = @_;
-
-  # We compile into a local sub because 'use version' would cause
-  # compiletime/runtime issues with local()
-  $pn++; # everybody gets their own package
-  my $eval = qq{ my \$dummy = q#  Hide from _packages_inside()
-    #; package Module::Metadata::_version::p${pn};
-    use version;
-    sub {
-      local $sigil$variable_name;
-      $line;
-      \$$variable_name
-    };
-  };
-
-  $eval = $1 if $eval =~ m{^(.+)}s;
-
-  local $^W;
-  # Try to get the $VERSION
-  my $vsub = __clean_eval($eval);
-  # some modules say $VERSION <equal sign> $Foo::Bar::VERSION, but Foo::Bar isn't
-  # installed, so we need to hunt in ./lib for it
-  if ( $@ =~ /Can't locate/ && -d 'lib' ) {
-    local @INC = ('lib',@INC);
-    $vsub = __clean_eval($eval);
-  }
-  warn "Error evaling version line '$eval' in $self->{filename}: $@\n"
-    if $@;
-
-  (ref($vsub) eq 'CODE') or
-    croak "failed to build version sub for $self->{filename}";
-
-  my $result = eval { $vsub->() };
-  # FIXME: $eval is not the right thing to print here
-  croak "Could not get version from $self->{filename} by executing:\n$eval\n\nThe fatal error was: $@\n"
-    if $@;
-
-  return $result;
-}
 }
 
 # Try to DWIM when things fail the lax version test in obvious ways
