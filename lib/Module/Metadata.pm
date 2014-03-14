@@ -47,14 +47,14 @@ my $PKG_ADDL_WORD_REGEXP = qr{ # the 2nd+ word in a package name
 }x;
 
 my $PKG_NAME_REGEXP = qr{ # match a package name
-  (?: :: )?               # a pkg name can start with aristotle
+  (?: :: )?               # a pkg name can start with arisdottle
   $PKG_FIRST_WORD_REGEXP  # a package word
   (?:
-    (?: :: )+             ### aristotle (allow one or many times)
+    (?: :: )+             ### arisdottle (allow one or many times)
     $PKG_ADDL_WORD_REGEXP ### a package word
   )*                      # ^ zero, one or many times
   (?:
-    ::                    # allow trailing aristotle
+    ::                    # allow trailing arisdottle
   )?
 }x;
 
