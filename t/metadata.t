@@ -332,15 +332,16 @@ while (++$test_case and my ($expected_version, $code) = splice @modules, 0, 2 ) 
     # Test::Builder will prematurely numify objects, so use this form
     my $errs;
     my $got = $pm_info->version;
-    if ( defined $expected_version ) {
-        ok( $got eq $expected_version,
-            "case $test_case: correct module version (expected '$expected_version')" )
-            or $errs++;
-    } else {
-        ok( !defined($got),
-            "case $test_case: correct module version (expected undef)" )
-            or $errs++;
-    }
+
+    is(
+      $got,
+      $expected_version,
+      "case $test_case: correct module version ("
+        . (defined $expected_version? "'$expected_version'" : 'undef')
+        . ')'
+    )
+    or $errs++;
+
     is( $warnings, '', "case $test_case: no warnings from parsing" ) or $errs++;
     diag "Got: '$got'\nModule contents:\n$code" if $errs;
   }
