@@ -12,7 +12,7 @@ use MBTest;
 my $undef;
 
 # parse various module $VERSION lines
-# these will be reversed later to create %modules
+# format: expected version => code snippet
 my @modules = (
   $undef => <<'---', # no $VERSION line
 package Simple;
@@ -218,8 +218,8 @@ package Simple;
 }
 ---
 );
-my %modules = reverse @modules;
 
+# format: expected package name => code snippet
 my @pkg_names = (
   [ 'Simple' ] => <<'---', # package NAME
 package Simple;
@@ -258,16 +258,18 @@ package Simple''Edward;
 package Simple-Edward;
 ---
 );
-my %pkg_names = reverse @pkg_names;
 
-plan tests => 63 + (2 * keys( %modules )) + (2 * keys( %pkg_names ));
+# 2 tests per each pair of @modules, @pkg_names entry
+plan tests => 63 + ( @modules ) + ( @pkg_names );
 
 require_ok('Module::Metadata');
 
-# class method C<find_module_by_name>
-my $module = Module::Metadata->find_module_by_name(
-               'Module::Metadata' );
-ok( -e $module, 'find_module_by_name() succeeds' );
+{
+    # class method C<find_module_by_name>
+    my $module = Module::Metadata->find_module_by_name(
+                   'Module::Metadata' );
+    ok( -e $module, 'find_module_by_name() succeeds' );
+}
 
 #########################
 
@@ -311,15 +313,16 @@ $pm_info = Module::Metadata->new_from_module(
 ok( defined( $pm_info ), 'new_from_module() succeeds' );
 
 
-foreach my $module ( sort keys %modules ) {
-    my $expected = $modules{$module};
+# iterate through @modules pairwise
+my $test_case = 0;
+while (++$test_case and my ($expected_version, $code) = splice @modules, 0, 2 ) {
  SKIP: {
     skip( "No our() support until perl 5.6", 2 )
-        if $] < 5.006 && $module =~ /\bour\b/;
+        if $] < 5.006 && $code =~ /\bour\b/;
     skip( "No package NAME VERSION support until perl 5.11.1", 2 )
-        if $] < 5.011001 && $module =~ /package\s+[\w\:\']+\s+v?[0-9._]+/;
+        if $] < 5.011001 && $code =~ /package\s+[\w\:\']+\s+v?[0-9._]+/;
 
-    $dist->change_file( 'lib/Simple.pm', $module );
+    $dist->change_file( 'lib/Simple.pm', $code );
     $dist->regen;
 
     my $warnings = '';
@@ -329,27 +332,26 @@ foreach my $module ( sort keys %modules ) {
     # Test::Builder will prematurely numify objects, so use this form
     my $errs;
     my $got = $pm_info->version;
-    if ( defined $expected ) {
-        ok( $got eq $expected,
-            "correct module version (expected '$expected')" )
+    if ( defined $expected_version ) {
+        ok( $got eq $expected_version,
+            "case $test_case: correct module version (expected '$expected_version')" )
             or $errs++;
     } else {
         ok( !defined($got),
-            "correct module version (expected undef)" )
+            "case $test_case: correct module version (expected undef)" )
             or $errs++;
     }
-    is( $warnings, '', 'no warnings from parsing' ) or $errs++;
-    diag "Got: '$got'\nModule contents:\n$module" if $errs;
+    is( $warnings, '', "case $test_case: no warnings from parsing" ) or $errs++;
+    diag "Got: '$got'\nModule contents:\n$code" if $errs;
   }
 }
 
 # revert to pristine state
 $dist->regen( clean => 1 );
 
-foreach my $pkg_name ( sort keys %pkg_names ) {
-    my $expected = $pkg_names{$pkg_name};
-
-    $dist->change_file( 'lib/Simple.pm', $pkg_name );
+$test_case = 0;
+while (++$test_case and my ($expected_name, $code) = splice @pkg_names, 0, 2) {
+    $dist->change_file( 'lib/Simple.pm', $code);
     $dist->regen;
 
     my $warnings = '';
@@ -359,11 +361,11 @@ foreach my $pkg_name ( sort keys %pkg_names ) {
     # Test::Builder will prematurely numify objects, so use this form
     my $errs;
     my @got = $pm_info->packages_inside();
-    is_deeply( \@got, $expected,
-               "correct package names (expected '" . join(', ', @$expected) . "')" )
+    is_deeply( \@got, $expected_name,
+               "case $test_case: correct package names (expected '" . join(', ', @$expected_name) . "')" )
             or $errs++;
-    is( $warnings, '', 'no warnings from parsing' ) or $errs++;
-    diag "Got: '" . join(', ', @got) . "'\nModule contents:\n$pkg_name" if $errs;
+    is( $warnings, '', "case $test_case: no warnings from parsing" ) or $errs++;
+    diag "Got: '" . join(', ', @got) . "'\nModule contents:\n$code" if $errs;
 }
 
 # revert to pristine state
