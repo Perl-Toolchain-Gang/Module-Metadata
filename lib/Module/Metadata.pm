@@ -24,6 +24,9 @@ BEGIN {
        } or *SEEK_SET = sub { 0 }
 }
 use version 0.87;
+use Module::Metadata::ExtractVersion 'eval_version';
+
+
 BEGIN {
   if ($INC{'Log/Contextual.pm'}) {
     Log::Contextual->import('log_info');
@@ -587,13 +590,23 @@ sub _parse_fh {
         $need_vers = 0 if $version_package eq $package;
 
         unless ( defined $vers{$version_package} && length $vers{$version_package} ) {
-        $vers{$version_package} = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
+        $vers{$version_package} = eval_version(
+          sigil => $version_sigil,
+          variable_name => $version_fullname,
+          string => $line,
+          filename => $self->{filename},
+        );
       }
 
       # first non-comment line in undeclared package main is VERSION
       } elsif ( !exists($vers{main}) && $package eq 'main' && $version_fullname ) {
         $need_vers = 0;
-        my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
+        my $v = eval_version(
+          sigil => $version_sigil,
+          variable_name => $version_fullname,
+          string => $line,
+          filename => $self->{filename},
+        );
         $vers{$package} = $v;
         push( @packages, 'main' );
 
@@ -606,7 +619,12 @@ sub _parse_fh {
       # only keep if this is the first $VERSION seen
       } elsif ( $version_fullname && $need_vers ) {
         $need_vers = 0;
-        my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
+        my $v = eval_version(
+          sigil => $version_sigil,
+          variable_name => $version_fullname,
+          string => $line,
+          filename => $self->{filename},
+        );
 
         unless ( defined $vers{$package} && length $vers{$package} ) {
           $vers{$package} = $v;
@@ -625,117 +643,6 @@ sub _parse_fh {
   $self->{pod_headings} = \@pod;
 }
 
-{
-my $pn = 0;
-sub _evaluate_version_line {
-  my $self = shift;
-  my( $sigil, $variable_name, $line ) = @_;
-
-  # Some of this code came from the ExtUtils:: hierarchy.
-
-  # We compile into $vsub because 'use version' would cause
-  # compiletime/runtime issues with local()
-  my $vsub;
-  $pn++; # everybody gets their own package
-  my $eval = qq{BEGIN { my \$dummy = q#  Hide from _packages_inside()
-    #; package Module::Metadata::_version::p$pn;
-    use version;
-    no strict;
-    no warnings;
-
-      \$vsub = sub {
-        local $sigil$variable_name;
-        \$$variable_name=undef;
-        $line;
-        \$$variable_name
-      };
-  }};
-
-  $eval = $1 if $eval =~ m{^(.+)}s;
-
-  local $^W;
-  # Try to get the $VERSION
-  eval $eval;
-  # some modules say $VERSION = $Foo::Bar::VERSION, but Foo::Bar isn't
-  # installed, so we need to hunt in ./lib for it
-  if ( $@ =~ /Can't locate/ && -d 'lib' ) {
-    local @INC = ('lib',@INC);
-    eval $eval;
-  }
-  warn "Error evaling version line '$eval' in $self->{filename}: $@\n"
-    if $@;
-  (ref($vsub) eq 'CODE') or
-    croak "failed to build version sub for $self->{filename}";
-  my $result = eval { $vsub->() };
-  croak "Could not get version from $self->{filename} by executing:\n$eval\n\nThe fatal error was: $@\n"
-    if $@;
-
-  # Upgrade it into a version object
-  my $version = eval { _dwim_version($result) };
-
-  croak "Version '$result' from $self->{filename} does not appear to be valid:\n$eval\n\nThe fatal error was: $@\n"
-    unless defined $version; # "0" is OK!
-
-  return $version;
-}
-}
-
-# Try to DWIM when things fail the lax version test in obvious ways
-{
-  my @version_prep = (
-    # Best case, it just works
-    sub { return shift },
-
-    # If we still don't have a version, try stripping any
-    # trailing junk that is prohibited by lax rules
-    sub {
-      my $v = shift;
-      $v =~ s{([0-9])[a-z-].*$}{$1}i; # 1.23-alpha or 1.23b
-      return $v;
-    },
-
-    # Activestate apparently creates custom versions like '1.23_45_01', which
-    # cause version.pm to think it's an invalid alpha.  So check for that
-    # and strip them
-    sub {
-      my $v = shift;
-      my $num_dots = () = $v =~ m{(\.)}g;
-      my $num_unders = () = $v =~ m{(_)}g;
-      my $leading_v = substr($v,0,1) eq 'v';
-      if ( ! $leading_v && $num_dots < 2 && $num_unders > 1 ) {
-        $v =~ s{_}{}g;
-        $num_unders = () = $v =~ m{(_)}g;
-      }
-      return $v;
-    },
-
-    # Worst case, try numifying it like we would have before version objects
-    sub {
-      my $v = shift;
-      no warnings 'numeric';
-      return 0 + $v;
-    },
-
-  );
-
-  sub _dwim_version {
-    my ($result) = shift;
-
-    return $result if ref($result) eq 'version';
-
-    my ($version, $error);
-    for my $f (@version_prep) {
-      $result = $f->($result);
-      $version = eval { version->new($result) };
-      $error ||= $@ if $@; # capture first failure
-      last if defined $version;
-    }
-
-    croak $error unless defined $version;
-
-    return $version;
-  }
-}
 
 ############################################################
 
