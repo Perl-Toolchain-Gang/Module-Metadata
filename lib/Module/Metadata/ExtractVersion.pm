@@ -50,10 +50,15 @@ sub eval_version
     print {$temp} _pl_template( $string, $sigil, $var );
     close $temp;
 
+    # detaint...
+    undef $ENV{PATH};
+    my $perl = $^X;
+    $perl = $1 if $perl =~ m{^(.+)}s;
+
     my $rc;
     my $result;
     my $err = gensym;
-    my $pid = open3(my $in, my $out, $err, $^X, $temp);
+    my $pid = open3(my $in, my $out, $err, $perl, $temp);
     my $killer;
     if ($^O eq 'MSWin32') {
         $killer = fork;
