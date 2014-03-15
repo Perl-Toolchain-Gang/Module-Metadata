@@ -11,74 +11,178 @@ our $VERSION = '1.000028';
 use base 'Exporter';
 our @EXPORT_OK = qw/eval_version/;
 
-use Carp qw/croak/;
-use version 0.87;
+use File::Spec;
+use File::Temp 0.18;
+use IPC::Open3 qw(open3);
+use Symbol 'gensym';
+
+# Win32 is slow to spawn processes
+my $TIMEOUT = $^O eq 'MSWin32' ? 5 : 2;
 
 =func eval_version
 
+    my $version = eval_version( q[our $VERSION = "1.23"] );
+
 Given a (decoded) string (usually a single line) that contains a C<$VERSION>
 declaration, this function will evaluate it in a L<Safe> compartment in a
-separate process.  If the C<$VERSION> is a valid version string according to
-L<version>, it will return it as a string, otherwise, it will return undef.
+separate process.  The extracted string is returned; it is B<not> validated
+against required syntax for versions at this level, so the caller should
+normally do something like C<< version::is_lax($version) >> before proceeding
+to use this data.
 
 =cut
 
 sub eval_version
 {
-    my (%args) = @_;
+    my ( $string, $timeout ) = @_;
+    $timeout = $TIMEOUT unless defined $timeout;
 
-    return _evaluate_version_line(
-        $args{sigil},
-        $args{variable_name},
-        $args{string},
-        $args{filename},
-    );
-}
+    # what $VERSION are we looking for?
+    my ( $sigil, $var ) = $string =~ /([\$*])((?:[\w\:\']*)\bVERSION)\b.*\=/;
+    return unless $sigil && $var;
 
-# transported directly from Module::Metadata
+    # munge string: remove "use version" as we do that already and the "use"
+    # will get stopped by the Safe compartment
+    $string =~ s/(?:use|require)\s+version[^;]*/1/;
 
-{
-my $pn = 0;
-sub _evaluate_version_line {
-  my( $sigil, $variable_name, $line, $filename ) = @_;
+    # create test file
+    my $temp = File::Temp->new;
+    print {$temp} _pl_template( $string, $sigil, $var );
+    close $temp;
 
-  # We compile into a local sub because 'use version' would cause
-  # compiletime/runtime issues with local()
-  $pn++; # everybody gets their own package
-  my $eval = qq{ my \$dummy = q#  Hide from _packages_inside()
-    #; package Module::Metadata::_version::p${pn};
-    use version;
-    sub {
-      local $sigil$variable_name;
-      $line;
-      \$$variable_name
+    my $rc;
+    my $result;
+    my $err = gensym;
+    my $pid = open3(my $in, my $out, $err, $^X, $temp);
+    my $killer;
+    if ($^O eq 'MSWin32') {
+        $killer = fork;
+        if (!defined $killer) {
+            die "Can't fork: $!";
+        }
+        elsif ($killer == 0) {
+            sleep $timeout;
+            kill 'KILL', $pid;
+            exit 0;
+        }
+    }
+    my $got = eval {
+        local $SIG{ALRM} = sub { die "alarm\n" };
+        alarm $timeout;
+        local $/;
+        $result = readline $out;
+        my $c = waitpid $pid, 0;
+        alarm 0;
+        ( $c != $pid ) || $?;
     };
-  };
+    if ( $@ eq "alarm\n" ) {
+        kill 'KILL', $pid;
+        waitpid $pid, 0;
+        $rc = $?;
+    }
+    else {
+        $rc = $got;
+    }
+    if ($killer) {
+        kill 'KILL', $killer;
+        waitpid $killer, 0;
+    }
 
-  $eval = $1 if $eval =~ m{^(.+)}s;
+    return if $rc || !defined $result; # error condition
 
-  local $^W;
-  # Try to get the $VERSION
-  my $vsub = __clean_eval($eval);
-  # some modules say $VERSION <equal sign> $Foo::Bar::VERSION, but Foo::Bar isn't
-  # installed, so we need to hunt in ./lib for it
-  if ( $@ =~ /Can't locate/ && -d 'lib' ) {
-    local @INC = ('lib',@INC);
-    $vsub = __clean_eval($eval);
-  }
-  warn "Error evaling version line '$eval' in $filename: $@\n"
-    if $@;
+##  print STDERR "# C<< $string >> --> $result" if $result =~ /^ERROR/;
+    return if $result =~ /^ERROR/;
 
-  (ref($vsub) eq 'CODE') or
-    croak "failed to build version sub for $filename";
+    $result =~ s/[\r\n]+\z//;
 
-  my $result = eval { $vsub->() };
-  # FIXME: $eval is not the right thing to print here
-  croak "Could not get version from $filename by executing:\n$eval\n\nThe fatal error was: $@\n"
-    if $@;
+    # treat '' the same as undef: no version was found
+    undef $result if $result eq '';
 
-  return $result;
+    return $result;
 }
+
+sub _pl_template {
+    my ( $string, $sigil, $var ) = @_;
+    return <<"HERE"
+use version;
+use Safe;
+use File::Spec;
+open STDERR, '>', File::Spec->devnull;
+open STDIN, '<', File::Spec->devnull;
+
+my \$comp = Safe->new;
+\$comp->permit("entereval"); # for MBARBON/Module-Info-0.30.tar.gz
+\$comp->share("*version::new");
+\$comp->share("*version::numify");
+\$comp->share_from('main', ['*version::',
+                            '*Exporter::',
+                            '*DynaLoader::']);
+\$comp->share_from('version', ['&qv']);
+
+my \$code = <<'END';
+    local $sigil$var;
+    \$$var = undef;
+    do {
+        $string
+    };
+    \$$var;
+END
+
+my \$result = \$comp->reval(\$code);
+print "ERROR: \$@\n" if \$@;
+exit unless defined \$result;
+
+eval { \$result = version->parse(\$result)->stringify };
+print \$result;
+
+HERE
 }
 
 1;
+
+=head1 SYNOPSIS
+
+    use Version::Eval qw/eval_version/;
+
+    my $version = eval_version( $unsafe_string );
+
+=head1 DESCRIPTION
+
+Package versions are defined by a string such as this:
+
+    package Foo;
+    our $VERSION = "1.23";
+
+If we want to know the version of a F<.pm> file, we can
+load it and check C<Foo->VERSION> for the package.  But that means any
+buggy or hostile code in F<Foo.pm> gets run.
+
+The safe thing to do is to parse out a string that looks like an assignment
+to C<$VERSION> and then evaluate it.  But even that could be hostile:
+
+    package Foo;
+    our $VERSION = do { my $n; $n++ while 1 }; # infinite loop
+
+This module executes a potential version string in a separate process in
+a L<Safe> compartment with a timeout to avoid as much risk as possible.
+
+Hostile code might still attempt to consume excessive resources, but the
+timeout should limit the problem.
+
+=head1 SEE ALSO
+
+=over 4
+
+* L<Parse::PMFile>
+
+* L<V>
+
+* L<use Module::Info>
+
+* L<Module::InstalledVersion>
+
+* L<Module::Version>
+
+=back
+
+=cut
