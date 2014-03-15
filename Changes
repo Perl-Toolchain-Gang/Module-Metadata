@@ -4,6 +4,8 @@ Release history for Module-Metadata
   - eliminated dependency on IO::File (and by virtue, XS) - thanks, leont!
   - removed cruft in test infrastructure left behind from separation from
     Module::Build (ether)
+  - now extracting module version a Safe compartment in a subprocess
+    (RT#89283)
 
 1.000019 - 2013-10-06
   - warnings now disabled inside during the evaluation of generated version

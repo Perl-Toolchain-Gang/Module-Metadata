@@ -150,15 +150,15 @@ our $VERSION = "1.23";
   package Simple;
   use version; our $VERSION = version->new('1.23');
 ---
-  '1.23' => <<'---', # $VERSION using version.pm and qv()
+  'v1.230' => <<'---', # $VERSION using version.pm and qv()
   package Simple;
   use version; our $VERSION = qv('1.230');
 ---
-  '1.23' => <<'---', # Two version assignments, should ignore second one
+  '1.230' => <<'---', # Two version assignments, should ignore second one
   $Simple::VERSION = '1.230';
   $Simple::VERSION = eval $Simple::VERSION;
 ---
-  '1.23' => <<'---', # declared & defined on same line with 'our'
+  '1.23_00_00' => <<'---', # declared & defined on same line with 'our'
 package Simple;
 our $VERSION = '1.23_00_00';
 ---
@@ -174,22 +174,22 @@ our $VERSION = '1.23_00_00';
   'v1.2_3' => <<'---', # package NAME VERSION
   package Simple v1.2_3;
 ---
-  '1.23' => <<'---', # trailing crud
+  '1.23-alpha' => <<'---', # trailing crud
   package Simple;
   our $VERSION;
   $VERSION = '1.23-alpha';
 ---
-  '1.23' => <<'---', # trailing crud
+  '1.23b' => <<'---', # trailing crud
   package Simple;
   our $VERSION;
   $VERSION = '1.23b';
 ---
-  '1.234' => <<'---', # multi_underscore
+  '1.2_3_4' => <<'---', # multi_underscore
   package Simple;
   our $VERSION;
   $VERSION = '1.2_3_4';
 ---
-  '0' => <<'---', # non-numeric
+  'onetwothree' => <<'---', # non-numeric
   package Simple;
   our $VERSION;
   $VERSION = 'onetwothree';
@@ -214,11 +214,27 @@ package Simple v1.2.3_4 {
   1;
 }
 ---
-  '0' => <<'---', # set from separately-initialised variable
+  $undef => <<'---', # set from separately-initialised variable, two lines
 package Simple;
   our $CVSVERSION   = '$Revision: 1.7 $';
   our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 }
+---
+  '1.7' => <<'---', # set from separately-initialised variable, one line
+package Simple;
+  my $CVSVERSION   = '$Revision: 1.7 $'; our ($VERSION) = ($CVSVERSION =~ /(\d+\.\d+)/);
+}
+---
+# from Lingua-StopWords-0.09/devel/gen_modules.plx
+  $undef => <<'---',
+package Foo;
+our $VERSION = $Bar::VERSION;
+---
+# from XML-XSH2-2.1.17/lib/XML/XSH2/Parser.pm
+  $undef => <<'---',
+our $VERSION = # Hide from PAUSE
+     '1.967009';
+$VERSION = eval $VERSION;
 ---
 );
 

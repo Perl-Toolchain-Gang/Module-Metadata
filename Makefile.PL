@@ -22,6 +22,11 @@ WriteMakefile(
     'vars'        => 0,
     'version'     => 0.87,
     'warnings'    => 0,
+    'Exporter'    => 0,
+    'File::Temp'  =>'0.18',
+    'IPC::Open3'  => 0,
+    'Symbol'      => 0,
+    'Safe'        => 0,
     $] < 5.008
       ? ( 'IO::Scalar' => 0 )
       : ()

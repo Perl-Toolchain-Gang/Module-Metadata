@@ -590,23 +590,13 @@ sub _parse_fh {
         $need_vers = 0 if $version_package eq $package;
 
         unless ( defined $vers{$version_package} && length $vers{$version_package} ) {
-        $vers{$version_package} = eval_version(
-          sigil => $version_sigil,
-          variable_name => $version_fullname,
-          string => $line,
-          filename => $self->{filename},
-        );
+        $vers{$version_package} = eval_version($line);
       }
 
       # first non-comment line in undeclared package main is VERSION
       } elsif ( !exists($vers{main}) && $package eq 'main' && $version_fullname ) {
         $need_vers = 0;
-        my $v = eval_version(
-          sigil => $version_sigil,
-          variable_name => $version_fullname,
-          string => $line,
-          filename => $self->{filename},
-        );
+        my $v = eval_version($line);
         $vers{$package} = $v;
         push( @packages, 'main' );
 
@@ -619,12 +609,7 @@ sub _parse_fh {
       # only keep if this is the first $VERSION seen
       } elsif ( $version_fullname && $need_vers ) {
         $need_vers = 0;
-        my $v = eval_version(
-          sigil => $version_sigil,
-          variable_name => $version_fullname,
-          string => $line,
-          filename => $self->{filename},
-        );
+        my $v = eval_version($line);
 
         unless ( defined $vers{$package} && length $vers{$package} ) {
           $vers{$package} = $v;
