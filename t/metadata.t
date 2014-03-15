@@ -263,7 +263,7 @@ package Simple-Edward;
 );
 
 # 2 tests per each pair of @modules, @pkg_names entry
-plan tests => 63 + ( @modules ) + ( @pkg_names );
+plan tests => 61 + ( @modules ) + ( @pkg_names );
 
 require_ok('Module::Metadata');
 
@@ -457,28 +457,6 @@ $VERSION = '1.23';
   is( $pm_info->version, undef, 'no version w/o default package' );
 }
 
-{
-  # Module 'Simple.pm' contains an alpha version
-  # constructor should report first $VERSION found
-  my $file = File::Spec->catfile('lib', 'Simple.pm');
-  my ($dist_name, $dist_dir) = new_dist(files => { $file => <<'---' } );
-package Simple;
-$VERSION = '1.23_01';
-$VERSION = eval $VERSION;
----
-
-  my $pm_info = Module::Metadata->new_from_file( $file );
-
-  is( $pm_info->version, '1.23_01', 'alpha version reported');
-
-  # NOTE the following test has be done this way because Test::Builder is
-  # too smart for our own good and tries to see if the version object is a
-  # dual-var, which breaks with alpha versions:
-  #    Argument "1.23_0100" isn't numeric in addition (+) at
-  #    /usr/lib/perl5/5.8.7/Test/Builder.pm line 505.
-
-  ok( $pm_info->version > 1.23, 'alpha version greater than non');
-}
 
 # parse $VERSION lines scripts for package main
 my @scripts = (
