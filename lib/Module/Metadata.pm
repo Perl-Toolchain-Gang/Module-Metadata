@@ -68,8 +68,10 @@ my $PKG_REGEXP  = qr{   # match a package declaration
   package               # the word 'package'
   \s+                   # whitespace
   ($PKG_NAME_REGEXP)    # a package name
-  \s*                   # optional whitespace
-  ($V_NUM_REGEXP)?        # optional version number
+  (?:
+    \s+                 # whitespace
+    ($V_NUM_REGEXP)     # optional version number
+  )?
   \s*                   # optional whitesapce
   [;\{]                 # semicolon line terminator or block start (since 5.16)
 }x;
