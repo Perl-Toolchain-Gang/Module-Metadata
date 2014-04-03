@@ -401,13 +401,12 @@ sub _init {
 
   unless($self->{module} and length($self->{module})) {
     my ($v, $d, $f) = File::Spec->splitpath($self->{filename});
-    if($f =~ /\.pm$/) {
-      $f =~ s/\..+$//;
-      my @candidates = grep /$f$/, @{$self->{packages}};
+    if($f =~ s/\.pm$//) {
+      my @candidates = grep /\Q$f\E$/, @{$self->{packages}};
       $self->{module} = shift(@candidates); # punt
     }
     else {
-      if(grep /main/, @{$self->{packages}}) {
+      if(grep $_ eq 'main', @{$self->{packages}}) {
         $self->{module} = 'main';
       }
       else {
