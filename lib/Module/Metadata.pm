@@ -591,14 +591,14 @@ sub _parse_fh {
       }
 
       # first non-comment line in undeclared package main is VERSION
-      } elsif ( !exists($vers{main}) && $package eq 'main' && $version_fullname ) {
+      } elsif ( $package eq 'main' && $version_fullname && !exists($vers{main}) ) {
         $need_vers = 0;
         my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
         $vers{$package} = $v;
         push( @packages, 'main' );
 
       # first non-comment line in undeclared package defines package main
-      } elsif ( !exists($vers{main}) && $package eq 'main' && $line =~ /\w+/ ) {
+      } elsif ( $package eq 'main' && !exists($vers{main}) && $line =~ /\w+/ ) {
         $need_vers = 1;
         $vers{main} = '';
         push( @packages, 'main' );
