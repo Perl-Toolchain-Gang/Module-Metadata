@@ -571,7 +571,7 @@ sub _parse_fh {
 
       # parse $line to see if it's a $VERSION declaration
       my( $version_sigil, $version_fullname, $version_package ) =
-          ($line =~ /VERSION/)
+          index($line, 'VERSION') >= 1
               ? $self->_parse_version_expression( $line )
               : ();
 
