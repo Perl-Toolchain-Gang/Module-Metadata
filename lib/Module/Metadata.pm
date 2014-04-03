@@ -80,7 +80,7 @@ my $VARNAME_REGEXP = qr{ # match fully-qualified VERSION name
   ([\$*])         # sigil - $ or *
   (
     (             # optional leading package name
-      (?:::|\')?  # possibly starting like just :: (Ì  la $::VERSION)
+      (?:::|\')?  # possibly starting like just :: (Ã  la $::VERSION)
       (?:\w+(?:::|\'))*  # Foo::Bar:: ...
     )?
     VERSION
