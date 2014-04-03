@@ -600,7 +600,7 @@ sub _parse_fh {
         push( @packages, 'main' );
 
       # first non-comment line in undeclared package defines package main
-      } elsif ( $package eq 'main' && !exists($vers{main}) && $line =~ /\w+/ ) {
+      } elsif ( $package eq 'main' && !exists($vers{main}) && $line =~ /\w/ ) {
         $need_vers = 1;
         $vers{main} = '';
         push( @packages, 'main' );
