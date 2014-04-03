@@ -432,8 +432,9 @@ sub _do_find_module {
     my $testfile = File::Spec->catfile($dir, $file);
     return [ File::Spec->rel2abs( $testfile ), $dir ]
       if -e $testfile and !-d _;  # For stuff like ExtUtils::xsubpp
-    return [ File::Spec->rel2abs( "$testfile.pm" ), $dir ]
-      if -e "$testfile.pm";
+    $testfile .= '.pm';
+    return [ File::Spec->rel2abs( $testfile ), $dir ]
+      if -e $testfile;
   }
   return;
 }
