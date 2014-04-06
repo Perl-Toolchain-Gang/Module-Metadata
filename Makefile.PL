@@ -27,6 +27,8 @@ WriteMakefile(
       : ()
     ,
   },
+  realclean => { FILES => [ 'Distar/', 'MANIFEST*' ] },
+
   -f 'META.yml' ? () : (
   META_MERGE => {
     'meta-spec' => { version => 2 },
