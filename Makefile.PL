@@ -32,10 +32,9 @@ WriteMakefile(
     'meta-spec' => { version => 2 },
     dynamic_config => 0,
     resources => {
-      # r/w: p5sagit@git.shadowcat.co.uk:Module-Metadata.git
       repository => {
-        url => 'git://git.shadowcat.co.uk/p5sagit/Module-Metadata.git',
-        web => 'http://git.shadowcat.co.uk/gitweb/gitweb.cgi?p=p5sagit/Module-Metadata.git',
+        url => 'git@github.com:Perl-Toolchain-Gang/Module-Metadata.git',
+        web => 'https://github.com/Perl-Toolchain-Gang/Module-Metadata',
         type => 'git',
       },
       bugtracker => {

@@ -4,6 +4,7 @@ Release history for Module-Metadata
   - eliminated dependency on IO::File (and by virtue, XS) - thanks, leont!
   - removed cruft in test infrastructure left behind from separation from
     Module::Build (ether)
+  - repository moved to https://github.com/Perl-Toolchain-Gang/Module-Metadata
 
 1.000019 - 2013-10-06
   - warnings now disabled inside during the evaluation of generated version
