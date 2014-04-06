@@ -32,7 +32,7 @@ WriteMakefile(
   -f 'META.yml' ? () : (
   META_MERGE => {
     'meta-spec' => { version => 2 },
-    dynamic_config => 0,
+    dynamic_config => 1,
     resources => {
       repository => {
         url => 'git@github.com:Perl-Toolchain-Gang/Module-Metadata.git',
