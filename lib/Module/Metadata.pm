@@ -68,8 +68,10 @@ my $PKG_REGEXP  = qr{   # match a package declaration
   package               # the word 'package'
   \s+                   # whitespace
   ($PKG_NAME_REGEXP)    # a package name
-  \s*                   # optional whitespace
-  ($V_NUM_REGEXP)?        # optional version number
+  (?:
+    \s+                 # whitespace
+    ($V_NUM_REGEXP)     # optional version number
+  )?
   \s*                   # optional whitesapce
   [;\{]                 # semicolon line terminator or block start (since 5.16)
 }x;
@@ -78,7 +80,7 @@ my $VARNAME_REGEXP = qr{ # match fully-qualified VERSION name
   ([\$*])         # sigil - $ or *
   (
     (             # optional leading package name
-      (?:::|\')?  # possibly starting like just :: (Ì  la $::VERSION)
+      (?:::|\')?  # possibly starting like just :: (Ã  la $::VERSION)
       (?:\w+(?:::|\'))*  # Foo::Bar:: ...
     )?
     VERSION
@@ -399,13 +401,12 @@ sub _init {
 
   unless($self->{module} and length($self->{module})) {
     my ($v, $d, $f) = File::Spec->splitpath($self->{filename});
-    if($f =~ /\.pm$/) {
-      $f =~ s/\..+$//;
-      my @candidates = grep /$f$/, @{$self->{packages}};
+    if($f =~ s/\.pm$//) {
+      my @candidates = grep /\Q$f\E$/, @{$self->{packages}};
       $self->{module} = shift(@candidates); # punt
     }
     else {
-      if(grep /main/, @{$self->{packages}}) {
+      if(grep $_ eq 'main', @{$self->{packages}}) {
         $self->{module} = 'main';
       }
       else {
@@ -431,8 +432,9 @@ sub _do_find_module {
     my $testfile = File::Spec->catfile($dir, $file);
     return [ File::Spec->rel2abs( $testfile ), $dir ]
       if -e $testfile and !-d _;  # For stuff like ExtUtils::xsubpp
-    return [ File::Spec->rel2abs( "$testfile.pm" ), $dir ]
-      if -e "$testfile.pm";
+    $testfile .= '.pm';
+    return [ File::Spec->rel2abs( $testfile ), $dir ]
+      if -e $testfile;
   }
   return;
 }
@@ -571,7 +573,7 @@ sub _parse_fh {
 
       # parse $line to see if it's a $VERSION declaration
       my( $version_sigil, $version_fullname, $version_package ) =
-          ($line =~ /VERSION/)
+          index($line, 'VERSION') >= 1
               ? $self->_parse_version_expression( $line )
               : ();
 
@@ -591,14 +593,14 @@ sub _parse_fh {
       }
 
       # first non-comment line in undeclared package main is VERSION
-      } elsif ( !exists($vers{main}) && $package eq 'main' && $version_fullname ) {
+      } elsif ( $package eq 'main' && $version_fullname && !exists($vers{main}) ) {
         $need_vers = 0;
         my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
         $vers{$package} = $v;
         push( @packages, 'main' );
 
       # first non-comment line in undeclared package defines package main
-      } elsif ( !exists($vers{main}) && $package eq 'main' && $line =~ /\w+/ ) {
+      } elsif ( $package eq 'main' && !exists($vers{main}) && $line =~ /\w/ ) {
         $need_vers = 1;
         $vers{main} = '';
         push( @packages, 'main' );
