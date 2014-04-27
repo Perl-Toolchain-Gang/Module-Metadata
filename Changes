@@ -1,5 +1,6 @@
 Release history for Module-Metadata
 
+1.000020 - 2014-04-27
   - new is_indexable() object method (ether, RT#84357)
   - eliminated dependency on IO::File (and by virtue, XS) - thanks, leont!
   - removed cruft in test infrastructure left behind from separation from
