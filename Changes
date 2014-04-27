@@ -5,6 +5,7 @@ Release history for Module-Metadata
   - removed cruft in test infrastructure left behind from separation from
     Module::Build (ether)
   - repository moved to https://github.com/Perl-Toolchain-Gang/Module-Metadata
+  - .pm file is now wholly ascii, for nicer fatpacking (RT#95086)
 
 1.000019 - 2013-10-06
   - warnings now disabled inside during the evaluation of generated version
