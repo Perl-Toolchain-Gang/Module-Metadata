@@ -2,6 +2,7 @@ Release history for Module-Metadata
 
   - fix use of newer interface from File::Path, to avoid another prereq on
     older perls (Graham Knop, PR#7)
+  - fixed all out of date prereq declarations
 
 1.000020 - 2014-04-27
   - new is_indexable() object method (ether, RT#84357)
