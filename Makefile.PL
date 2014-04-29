@@ -34,6 +34,7 @@ WriteMakefile(
     'meta-spec' => { version => 2 },
     dynamic_config => 1,
     resources => {
+      homepage => 'https://metacpan.org/pod/Module::Metadata',
       repository => {
         url => 'git@github.com:Perl-Toolchain-Gang/Module-Metadata.git',
         web => 'https://github.com/Perl-Toolchain-Gang/Module-Metadata',
@@ -43,6 +44,7 @@ WriteMakefile(
           mailto => 'bug-Module-Metadata@rt.cpan.org',
           web => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Module-Metadata',
       },
+      'x_IRC' => 'irc://irc.perl.org/#toolchain',
     },
     prereqs => {
       test => {
