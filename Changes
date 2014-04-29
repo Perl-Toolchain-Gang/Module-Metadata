@@ -3,6 +3,8 @@ Release history for Module-Metadata
   - work around change in comparison behaviour in Test::More 0.95_01 by being
     more explicit with our tests - now explicitly checking the string form of
     the extracted version, rather than the entire version object
+  - ensure the extracted version is returned as a version object in all cases
+    (RT#87782, Randy Stauner)
 
 1.000021 - 2014-04-29
   - fix use of newer interface from File::Path, to avoid another prereq on

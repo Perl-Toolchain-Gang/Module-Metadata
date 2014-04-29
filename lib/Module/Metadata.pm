@@ -578,9 +578,17 @@ sub _parse_fh {
 
       if ( $line =~ /$PKG_REGEXP/o ) {
         $package = $1;
+        my $version = $2;
         push( @packages, $package ) unless grep( $package eq $_, @packages );
-        $vers{$package} = $2 unless exists( $vers{$package} );
-        $need_vers = defined $2 ? 0 : 1;
+        $need_vers = defined $version ? 0 : 1;
+
+        if ( not exists $vers{$package} and defined $version ){
+          # Upgrade to a version object.
+          my $dwim_version = eval { _dwim_version($version) };
+          croak "Version '$version' from $self->{filename} does not appear to be valid:\n$line\n\nThe fatal error was: $@\n"
+              unless defined $dwim_version;  # "0" is OK!
+          $vers{$package} = $dwim_version;
+        }
 
       # VERSION defined with full package spec, i.e. $Module::VERSION
       } elsif ( $version_fullname && $version_package ) {
