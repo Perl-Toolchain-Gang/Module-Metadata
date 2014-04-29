@@ -676,12 +676,14 @@ sub _evaluate_version_line {
   (ref($vsub) eq 'CODE') or
     croak "failed to build version sub for $self->{filename}";
   my $result = eval { $vsub->() };
+  # FIXME: $eval is not the right thing to print here
   croak "Could not get version from $self->{filename} by executing:\n$eval\n\nThe fatal error was: $@\n"
     if $@;
 
   # Upgrade it into a version object
   my $version = eval { _dwim_version($result) };
 
+  # FIXME: $eval is not the right thing to print here
   croak "Version '$result' from $self->{filename} does not appear to be valid:\n$eval\n\nThe fatal error was: $@\n"
     unless defined $version; # "0" is OK!
 
