@@ -23,7 +23,7 @@ my %WriteMakefileArgs = (
     resources => {
       homepage => 'https://metacpan.org/pod/Module::Metadata',
       repository => {
-        url => 'git@github.com:Perl-Toolchain-Gang/Module-Metadata.git',
+        url => 'https://github.com/Perl-Toolchain-Gang/Module-Metadata.git',
         web => 'https://github.com/Perl-Toolchain-Gang/Module-Metadata',
         type => 'git',
       },
