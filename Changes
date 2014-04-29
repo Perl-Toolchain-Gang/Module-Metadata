@@ -1,5 +1,6 @@
 Release history for Module-Metadata
 
+1.000021 - 2014-04-29
   - fix use of newer interface from File::Path, to avoid another prereq on
     older perls (Graham Knop, PR#7)
   - fixed all out of date prereq declarations
