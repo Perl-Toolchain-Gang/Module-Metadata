@@ -1,5 +1,6 @@
 Release history for Module-Metadata
 
+1.000022 - 2014-04-29
   - work around change in comparison behaviour in Test::More 0.95_01 by being
     more explicit with our tests - now explicitly checking the string form of
     the extracted version, rather than the entire version object
