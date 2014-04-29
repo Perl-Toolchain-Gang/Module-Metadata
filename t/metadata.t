@@ -296,7 +296,7 @@ END {
     if $ENV{AUTHOR_TESTING} and not Test::Builder->new->is_passing;
   diag "removing temp dir $tmp";
   chdir original_cwd;
-  File::Path::remove_tree($tmp);
+  File::Path::rmtree($tmp);
 }
 
 # generates a new distribution:
