@@ -11,6 +11,7 @@ use File::Temp;
 use File::Basename;
 use Cwd ();
 use File::Path;
+use Data::Dumper;
 
 my $undef;
 
@@ -150,15 +151,15 @@ our $VERSION = "1.23";
   package Simple;
   use version; our $VERSION = version->new('1.23');
 ---
-  '1.23' => <<'---', # $VERSION using version.pm and qv()
+  'v1.230' => <<'---', # $VERSION using version.pm and qv()
   package Simple;
   use version; our $VERSION = qv('1.230');
 ---
-  '1.23' => <<'---', # Two version assignments, should ignore second one
+  '1.230' => <<'---', # Two version assignments, should ignore second one
   $Simple::VERSION = '1.230';
   $Simple::VERSION = eval $Simple::VERSION;
 ---
-  '1.23' => <<'---', # declared & defined on same line with 'our'
+  '1.230000' => <<'---', # declared & defined on same line with 'our'
 package Simple;
 our $VERSION = '1.23_00_00';
 ---
@@ -262,8 +263,10 @@ package Simple-Edward;
 ---
 );
 
-# 2 tests per each pair of @modules, @pkg_names entry
-plan tests => 63 + ( @modules ) + ( @pkg_names );
+# 2 tests per each pair of @modules (plus 1 for defined keys), 2 per pair of @pkg_names
+plan tests => 63
+  + ( @modules + grep { defined $modules[2*$_] } 0..$#modules/2 )
+  + ( @pkg_names );
 
 require_ok('Module::Metadata');
 
@@ -376,9 +379,9 @@ END {
 my $test_case = 0;
 while (++$test_case and my ($expected_version, $code) = splice @modules, 0, 2 ) {
  SKIP: {
-    skip( "No our() support until perl 5.6", 2 )
+    skip( "No our() support until perl 5.6", (defined $expected_version ? 3 : 2) )
         if $] < 5.006 && $code =~ /\bour\b/;
-    skip( "No package NAME VERSION support until perl 5.11.1", 2 )
+    skip( "No package NAME VERSION support until perl 5.11.1", (defined $expected_version ? 3 : 2) )
         if $] < 5.011001 && $code =~ /package\s+[\w\:\']+\s+v?[0-9._]+/;
 
     my $file = File::Spec->catfile('lib', 'Simple.pm');
@@ -388,12 +391,16 @@ while (++$test_case and my ($expected_version, $code) = splice @modules, 0, 2 ) 
     local $SIG{__WARN__} = sub { $warnings .= $_ for @_ };
     my $pm_info = Module::Metadata->new_from_file( $file );
 
-    # Test::Builder will prematurely numify objects, so use this form
     my $errs;
     my $got = $pm_info->version;
 
+    # note that in Test::More 0.94 and earlier, is() stringifies first before comparing;
+    # from 0.95_01 and later, it just lets the objects figure out how to handle 'eq'
+    # We want to ensure we preserve the original, as long as it's legal, so we
+    # explicitly check the stringified form.
+    isa_ok($got, 'version') if defined $expected_version;
     is(
-      $got,
+      (defined $got ? "$got" : $got),
       $expected_version,
       "case $test_case: correct module version ("
         . (defined $expected_version? "'$expected_version'" : 'undef')
@@ -402,7 +409,7 @@ while (++$test_case and my ($expected_version, $code) = splice @modules, 0, 2 ) 
     or $errs++;
 
     is( $warnings, '', "case $test_case: no warnings from parsing" ) or $errs++;
-    diag "Got: '$got'\nModule contents:\n$code" if $errs;
+    diag Dumper({ got => $pm_info->version, module_contents => $code }) if $errs;
   }
 }
 

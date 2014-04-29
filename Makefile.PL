@@ -64,6 +64,7 @@ my %META = (
           'File::Temp' => 0,
           'IO::File' => 0,
           'vars' => 0,
+          'Data::Dumper' => 0,
         },
       },
     },

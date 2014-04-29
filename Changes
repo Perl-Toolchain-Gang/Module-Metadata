@@ -1,5 +1,9 @@
 Release history for Module-Metadata
 
+  - work around change in comparison behaviour in Test::More 0.95_01 by being
+    more explicit with our tests - now explicitly checking the string form of
+    the extracted version, rather than the entire version object
+
 1.000021 - 2014-04-29
   - fix use of newer interface from File::Path, to avoid another prereq on
     older perls (Graham Knop, PR#7)
