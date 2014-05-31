@@ -1,6 +1,6 @@
 use strict;
 use warnings FATAL => 'all';
-use ExtUtils::MakeMaker;
+use ExtUtils::MakeMaker 6.64;
 use 5.006;
 
 # TODO: convert to dzil and use [OnlyCorePrereqs], and possibly [DualLife]
@@ -41,7 +41,7 @@ my %META = (
     prereqs => {
       configure => {
         requires => {
-          'ExtUtils::MakeMaker' => '0',
+          'ExtUtils::MakeMaker' => '6.64',
         },
       },
       runtime => {
