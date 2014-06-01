@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - support installations on older perls with an ExtUtils::MakeMaker earlier
+    than 6.63_03
 
 1.000022 - 2014-04-29
   - work around change in comparison behaviour in Test::More 0.95_01 by being
