@@ -1,4 +1,6 @@
-Release history for Module-Metadata
+Revision history for {{$dist->name}}
+
+{{$NEXT}}
 
 1.000022 - 2014-04-29
   - work around change in comparison behaviour in Test::More 0.95_01 by being

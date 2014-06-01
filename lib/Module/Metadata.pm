@@ -12,9 +12,6 @@ package Module::Metadata;
 use strict;
 use warnings;
 
-our $VERSION = '1.000022';
-$VERSION = eval $VERSION;
-
 use Carp qw/croak/;
 use File::Spec;
 BEGIN {
@@ -665,7 +662,7 @@ sub _evaluate_version_line {
   local $^W;
   # Try to get the $VERSION
   eval $eval;
-  # some modules say $VERSION = $Foo::Bar::VERSION, but Foo::Bar isn't
+  # some modules say $VERSION <equal sign> $Foo::Bar::VERSION, but Foo::Bar isn't
   # installed, so we need to hunt in ./lib for it
   if ( $@ =~ /Can't locate/ && -d 'lib' ) {
     local @INC = ('lib',@INC);
