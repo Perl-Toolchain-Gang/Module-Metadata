@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+1.000023  2014-06-02 02:37:17Z
   - support installations on older perls with an ExtUtils::MakeMaker earlier
     than 6.63_03
 
