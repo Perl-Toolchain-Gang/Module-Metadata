@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+1.000024  2014-06-03 01:52:46Z
   - fix inaccurate prerequisite declaration on Test::More (in 1.000023)
 
 1.000023  2014-06-02 02:37:17Z
