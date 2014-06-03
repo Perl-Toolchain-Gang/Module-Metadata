@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - fix inaccurate prerequisite declaration on Test::More (in 1.000023)
 
 1.000023  2014-06-02 02:37:17Z
   - support installations on older perls with an ExtUtils::MakeMaker earlier
