@@ -221,6 +221,11 @@ package Simple;
   our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 }
 ---
+  'v2.2.102.2' => <<'---', # our + bare v-string
+package Simple;
+  our $VERSION     = v2.2.102.2;
+}
+---
 );
 
 # format: expected package name => code snippet
