@@ -308,12 +308,12 @@ sub tmpdir {
 }
 
 my $tmp;
-BEGIN { $tmp = tmpdir; diag "using temp dir $tmp"; }
+BEGIN { $tmp = tmpdir; note "using temp dir $tmp"; }
 
 END {
   die "tests failed; leaving temp dir $tmp behind"
     if $ENV{AUTHOR_TESTING} and not Test::Builder->new->is_passing;
-  diag "removing temp dir $tmp";
+  note "removing temp dir $tmp";
   chdir original_cwd;
   File::Path::rmtree($tmp);
 }
