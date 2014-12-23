@@ -223,18 +223,15 @@ package Simple;
 ---
   'v2.2.102.2' => <<'---', # our + bare v-string
 package Simple;
-  our $VERSION     = v2.2.102.2;
-}
+our $VERSION     = v2.2.102.2;
 ---
   '0.0.9_1' => <<'---', # our + dev release
 package Simple;
-  our $VERSION = "0.0.9_1";
-}
+our $VERSION = "0.0.9_1";
 ---
   '1.12' => <<'---', # our + crazy string and substitution code
 package Simple;
-  our $VERSION     = '1.12.B55J2qn'; our $WTF = $VERSION; $WTF =~ s/^\d+\.\d+\.//; # attempts to rationalize $WTF go here.
-}
+our $VERSION     = '1.12.B55J2qn'; our $WTF = $VERSION; $WTF =~ s/^\d+\.\d+\.//; # attempts to rationalize $WTF go here.
 ---
 );
 
