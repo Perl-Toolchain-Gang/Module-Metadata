@@ -299,7 +299,7 @@ BEGIN {
   sub original_cwd { return $cwd }
 }
 
-# Setup a temp directory
+# Set up a temp directory
 sub tmpdir {
   my (@args) = @_;
   my $dir = $ENV{PERL_CORE} ? original_cwd : File::Spec->tmpdir;
