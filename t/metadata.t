@@ -233,6 +233,10 @@ our $VERSION = "0.0.9_1";
 package Simple;
 our $VERSION     = '1.12.B55J2qn'; our $WTF = $VERSION; $WTF =~ s/^\d+\.\d+\.//; # attempts to rationalize $WTF go here.
 ---
+  '1.12' => <<'---', # our in braces, as in Dist::Zilla::Plugin::PkgVersion with use_our = 1
+package Simple;
+{ our $VERSION = '1.12'; }
+---
 );
 
 # format: expected package name => code snippet
