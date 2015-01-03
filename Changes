@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - evaluate version assignment in a clean environment, to fix assignment in a
+    block (RT#101095)
 
 1.000024  2014-06-03 01:52:46Z
   - fix inaccurate prerequisite declaration on Test::More (in 1.000023)

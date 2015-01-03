@@ -9,6 +9,7 @@ package Module::Metadata;
 # perl modules (assuming this may be expanded in the distant
 # parrot future to look at other types of modules).
 
+sub __clean_eval { eval $_[0] }
 use strict;
 use warnings;
 
@@ -637,41 +638,36 @@ sub _evaluate_version_line {
   my $self = shift;
   my( $sigil, $variable_name, $line ) = @_;
 
-  # Some of this code came from the ExtUtils:: hierarchy.
-
-  # We compile into $vsub because 'use version' would cause
+  # We compile into a local sub because 'use version' would cause
   # compiletime/runtime issues with local()
-  my $vsub;
   $pn++; # everybody gets their own package
-  my $eval = qq{BEGIN { my \$dummy = q#  Hide from _packages_inside()
-    #; package Module::Metadata::_version::p$pn;
+  my $eval = qq{ my \$dummy = q#  Hide from _packages_inside()
+    #; package Module::Metadata::_version::p${pn};
     use version;
-    no strict;
-    no warnings;
-
-      \$vsub = sub {
-        local $sigil$variable_name;
-        \$$variable_name=undef;
-        $line;
-        \$$variable_name
-      };
-  }};
+    sub {
+      local $sigil$variable_name;
+      $line;
+      \$$variable_name
+    };
+  };
 
   $eval = $1 if $eval =~ m{^(.+)}s;
 
   local $^W;
   # Try to get the $VERSION
-  eval $eval;
+  my $vsub = __clean_eval($eval);
   # some modules say $VERSION <equal sign> $Foo::Bar::VERSION, but Foo::Bar isn't
   # installed, so we need to hunt in ./lib for it
   if ( $@ =~ /Can't locate/ && -d 'lib' ) {
     local @INC = ('lib',@INC);
-    eval $eval;
+    $vsub = __clean_eval($eval);
   }
   warn "Error evaling version line '$eval' in $self->{filename}: $@\n"
     if $@;
+
   (ref($vsub) eq 'CODE') or
     croak "failed to build version sub for $self->{filename}";
+
   my $result = eval { $vsub->() };
   # FIXME: $eval is not the right thing to print here
   croak "Could not get version from $self->{filename} by executing:\n$eval\n\nThe fatal error was: $@\n"
