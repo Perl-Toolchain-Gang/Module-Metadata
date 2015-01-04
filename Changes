@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+1.000025  2015-01-04 18:56:00Z
   - evaluate version assignment in a clean environment, to fix assignment in a
     block (RT#101095)
 
