@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+1.000026  2015-01-17 19:22:34Z
   - patched tests to be less noisy in blead builds (Dave Mitchell, RT#101491)
 
 1.000025  2015-01-04 18:56:00Z
