@@ -2,6 +2,7 @@ Revision history for Module-Metadata
 
 {{$NEXT}}
   - refactored and expanded test cases
+  - fixed a $VERSION extraction issue on perl 5.6.2 (RT#105978, PR#17)
 
 1.000027  2015-04-11 00:21:26Z
   - work around issues with an unconfigured Log::Contextual (Kent Fredric)
