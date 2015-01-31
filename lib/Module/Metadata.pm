@@ -652,7 +652,8 @@ sub _evaluate_version_line {
     sub {
       local $sigil$variable_name;
       $line;
-      \$$variable_name
+      return \$$variable_name if defined \$$variable_name;
+      return \$Module::Metadata::_version::p${pn}::$variable_name;
     };
   };
 
