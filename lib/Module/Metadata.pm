@@ -660,9 +660,10 @@ sub _evaluate_version_line {
   # Try to get the $VERSION
   my $vsub = __clean_eval($eval);
   # some modules say $VERSION <equal sign> $Foo::Bar::VERSION, but Foo::Bar isn't
-  # installed, so we need to hunt in ./lib for it
-  if ( $@ =~ /Can't locate/ && -d 'lib' ) {
+  # installed, so we need to hunt in ./lib and/or ./blib for it
+  if ( $@ =~ /Can't locate/ && (-d 'lib' || -d 'blib') ) {
     local @INC = ('lib',@INC);
+    require blib; blib->import;
     $vsub = __clean_eval($eval);
   }
   warn "Error evaling version line '$eval' in $self->{filename}: $@\n"
