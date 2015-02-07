@@ -26,7 +26,10 @@ BEGIN {
 use version 0.87;
 BEGIN {
   if ($INC{'Log/Contextual.pm'}) {
-    Log::Contextual->import('log_info');
+    require "Log/Contextual/WarnLogger.pm"; # Hide from AutoPrereqs
+    Log::Contextual->import('log_info',
+      '-default_logger' => Log::Contextual::WarnLogger->new({ env_prefix => 'MODULE_METADATA', }),
+    );
   } else {
     *log_info = sub (&) { warn $_[0]->() };
   }
