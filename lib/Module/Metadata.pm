@@ -970,6 +970,7 @@ version of that package if it is specified in the file.
 =head2 C<< filename() >>
 
 Returns the absolute path to the file.
+Note that this file may not actually exist on disk yet, e.g. if the module was read from an in-memory filehandle.
 
 =head2 C<< packages_inside() >>
 
