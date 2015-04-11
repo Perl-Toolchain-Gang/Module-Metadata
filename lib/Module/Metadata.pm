@@ -13,7 +13,7 @@ sub __clean_eval { eval $_[0] }
 use strict;
 use warnings;
 
-our $VERSION = '1.000027';
+our $VERSION = '1.000028';
 
 use Carp qw/croak/;
 use File::Spec;
