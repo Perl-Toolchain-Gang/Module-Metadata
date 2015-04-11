@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - allow tests to pass in a perl with no taint support (James Raspass)
 
 1.000026  2015-01-17 19:22:34Z
   - patched tests to be less noisy in blead builds (Dave Mitchell, RT#101491)
