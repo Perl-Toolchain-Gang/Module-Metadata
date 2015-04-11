@@ -1,6 +1,6 @@
-Revision history for {{$dist->name}}
+Revision history for Module-Metadata
 
-{{$NEXT}}
+1.000027  2015-04-11 00:21:26Z
   - work around issues with an unconfigured Log::Contextual (Kent Fredric)
   - allow tests to pass in a perl with no taint support (James Raspass)
 
