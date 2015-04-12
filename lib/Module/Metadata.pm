@@ -792,6 +792,7 @@ sub is_indexable {
 }
 
 1;
+__END__
 
 =head1 NAME
 
