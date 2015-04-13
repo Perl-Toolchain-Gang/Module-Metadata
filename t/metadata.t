@@ -219,7 +219,7 @@ package Simple v1.2.3_4 {
   1;
 }
 ---
-  '0' => <<'---', # set from separately-initialised variable
+  '0' => <<'---', # set from separately-initialised variable, two lines
 package Simple;
   our $CVSVERSION   = '$Revision: 1.7 $';
   our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
@@ -245,6 +245,22 @@ package Simple;
 package Simple;
 my $version = atan2(1,1) * 4; $Simple::VERSION = "$version";
 1;
+---
+  '1.7' => <<'---', # set from separately-initialised variable, one line
+package Simple;
+  my $CVSVERSION   = '$Revision: 1.7 $'; our ($VERSION) = ($CVSVERSION =~ /(\d+\.\d+)/);
+}
+---
+# from Lingua-StopWords-0.09/devel/gen_modules.plx
+  $undef => <<'---',
+package Foo;
+our $VERSION = $Bar::VERSION;
+---
+# from XML-XSH2-2.1.17/lib/XML/XSH2/Parser.pm
+  $undef => <<'---',
+our $VERSION = # Hide from PAUSE
+     '1.967009';
+$VERSION = eval $VERSION;
 ---
 );
 
