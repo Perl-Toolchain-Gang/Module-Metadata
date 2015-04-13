@@ -171,19 +171,12 @@ timeout should limit the problem.
 
 =head1 SEE ALSO
 
-=over 4
-
+=for :list
 * L<Parse::PMFile>
-
 * L<V>
-
 * L<use Module::Info>
-
 * L<Module::InstalledVersion>
-
 * L<Module::Version>
-
-=back
 
 =head1 AUTHOR
 
