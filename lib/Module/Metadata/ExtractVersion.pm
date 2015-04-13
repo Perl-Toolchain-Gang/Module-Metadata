@@ -185,4 +185,8 @@ timeout should limit the problem.
 
 =back
 
+=head1 AUTHOR
+
+This logic was written by Graham Knop, <haarg@haarg.org>.
+
 =cut
