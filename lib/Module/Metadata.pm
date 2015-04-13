@@ -1,6 +1,7 @@
 # -*- mode: cperl; tab-width: 8; indent-tabs-mode: nil; basic-offset: 2 -*-
 # vim:ts=8:sw=2:et:sta:sts=2
 package Module::Metadata;
+# ABSTRACT: Gather package and POD information from perl module files
 
 # Adapted from Perl-licensed code originally distributed with
 # Module-Build by Ken Williams
@@ -794,9 +795,7 @@ sub is_indexable {
 1;
 __END__
 
-=head1 NAME
-
-Module::Metadata - Gather package and POD information from perl module files
+=pod
 
 =head1 SYNOPSIS
 
