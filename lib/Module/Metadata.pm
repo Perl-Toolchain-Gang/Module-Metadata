@@ -551,6 +551,8 @@ sub _parse_fh {
 
       }
 
+      next;
+
     } elsif ( $is_cut ) {
 
       if ( $self->{collect_pod} && length( $pod_data ) ) {
@@ -558,75 +560,77 @@ sub _parse_fh {
         $pod_data = '';
       }
       $pod_sect = '';
+      next;
 
-    } else {
+    }
 
-      # Skip after __END__
-      next if $in_end;
+    # Skip after __END__
+    next if $in_end;
 
-      # Skip comments in code
-      next if $line =~ /^\s*#/;
+    # Skip comments in code
+    next if $line =~ /^\s*#/;
 
-      # Would be nice if we could also check $in_string or something too
-      if ($line eq '__END__') {
-        $in_end++;
-        next;
-      }
-      last if $line eq '__DATA__';
+    # Would be nice if we could also check $in_string or something too
+    if ($line eq '__END__') {
+      $in_end++;
+      next;
+    }
 
-      # parse $line to see if it's a $VERSION declaration
-      my( $version_sigil, $version_fullname, $version_package ) =
-          index($line, 'VERSION') >= 1
-              ? $self->_parse_version_expression( $line )
-              : ();
+    last if $line eq '__DATA__';
 
-      if ( $line =~ /$PKG_REGEXP/o ) {
-        $package = $1;
-        my $version = $2;
-        push( @packages, $package ) unless grep( $package eq $_, @packages );
-        $need_vers = defined $version ? 0 : 1;
+    # parse $line to see if it's a $VERSION declaration
+    my( $version_sigil, $version_fullname, $version_package ) =
+        index($line, 'VERSION') >= 1
+            ? $self->_parse_version_expression( $line )
+            : ();
 
-        if ( not exists $vers{$package} and defined $version ){
-          # Upgrade to a version object.
-          my $dwim_version = eval { _dwim_version($version) };
-          croak "Version '$version' from $self->{filename} does not appear to be valid:\n$line\n\nThe fatal error was: $@\n"
-              unless defined $dwim_version;  # "0" is OK!
-          $vers{$package} = $dwim_version;
-        }
+    if ( $line =~ /$PKG_REGEXP/o ) {
+      $package = $1;
+      my $version = $2;
+      push( @packages, $package ) unless grep( $package eq $_, @packages );
+      $need_vers = defined $version ? 0 : 1;
 
-      # VERSION defined with full package spec, i.e. $Module::VERSION
-      } elsif ( $version_fullname && $version_package ) {
-        push( @packages, $version_package ) unless grep( $version_package eq $_, @packages );
-        $need_vers = 0 if $version_package eq $package;
-
-        unless ( defined $vers{$version_package} && length $vers{$version_package} ) {
-        $vers{$version_package} = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
+      if ( not exists $vers{$package} and defined $version ){
+        # Upgrade to a version object.
+        my $dwim_version = eval { _dwim_version($version) };
+        croak "Version '$version' from $self->{filename} does not appear to be valid:\n$line\n\nThe fatal error was: $@\n"
+            unless defined $dwim_version;  # "0" is OK!
+        $vers{$package} = $dwim_version;
       }
 
-      # first non-comment line in undeclared package main is VERSION
-      } elsif ( $package eq 'main' && $version_fullname && !exists($vers{main}) ) {
-        $need_vers = 0;
-        my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
+    # VERSION defined with full package spec, i.e. $Module::VERSION
+    } elsif ( $version_fullname && $version_package ) {
+      push( @packages, $version_package ) unless grep( $version_package eq $_, @packages );
+      $need_vers = 0 if $version_package eq $package;
+
+      unless ( defined $vers{$version_package} && length $vers{$version_package} ) {
+      $vers{$version_package} = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
+    }
+
+    # first non-comment line in undeclared package main is VERSION
+    } elsif ( $package eq 'main' && $version_fullname && !exists($vers{main}) ) {
+      $need_vers = 0;
+      my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
+      $vers{$package} = $v;
+      push( @packages, 'main' );
+
+    # first non-comment line in undeclared package defines package main
+    } elsif ( $package eq 'main' && !exists($vers{main}) && $line =~ /\w/ ) {
+      $need_vers = 1;
+      $vers{main} = '';
+      push( @packages, 'main' );
+
+    # only keep if this is the first $VERSION seen
+    } elsif ( $version_fullname && $need_vers ) {
+      $need_vers = 0;
+      my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
+
+      unless ( defined $vers{$package} && length $vers{$package} ) {
         $vers{$package} = $v;
-        push( @packages, 'main' );
-
-      # first non-comment line in undeclared package defines package main
-      } elsif ( $package eq 'main' && !exists($vers{main}) && $line =~ /\w/ ) {
-        $need_vers = 1;
-        $vers{main} = '';
-        push( @packages, 'main' );
-
-      # only keep if this is the first $VERSION seen
-      } elsif ( $version_fullname && $need_vers ) {
-        $need_vers = 0;
-        my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
-
-        unless ( defined $vers{$package} && length $vers{$package} ) {
-          $vers{$package} = $v;
-        }
       }
     }
-  }
+
+  } # end loop over each line
 
   if ( $self->{collect_pod} && length($pod_data) ) {
     $pod{$pod_sect} = $pod_data;
