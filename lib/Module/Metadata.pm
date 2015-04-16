@@ -604,8 +604,8 @@ sub _parse_fh {
       $need_vers = 0 if $version_package eq $package;
 
       unless ( defined $vers{$version_package} && length $vers{$version_package} ) {
-      $vers{$version_package} = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
-    }
+        $vers{$version_package} = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
+      }
 
     # first non-comment line in undeclared package main is VERSION
     } elsif ( $package eq 'main' && $version_fullname && !exists($vers{main}) ) {
