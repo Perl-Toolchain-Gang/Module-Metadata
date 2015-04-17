@@ -514,7 +514,7 @@ sub _parse_fh {
   my ($self, $fh) = @_;
 
   my( $in_pod, $seen_end, $need_vers ) = ( 0, 0, 0 );
-  my( @packages, %vers, %pod, @pod );
+  my( @packages, %vers_raw, %vers, %pod, @pod );
   my $package = 'main';
   my $pod_sect = '';
   my $pod_data = '';
@@ -590,12 +590,8 @@ sub _parse_fh {
       push( @packages, $package ) unless grep( $package eq $_, @packages );
       $need_vers = defined $version ? 0 : 1;
 
-      if ( not exists $vers{$package} and defined $version ){
-        # Upgrade to a version object.
-        my $dwim_version = eval { _dwim_version($version) };
-        croak "Version '$version' from $self->{filename} does not appear to be valid:\n$line\n\nThe fatal error was: $@\n"
-            unless defined $dwim_version;  # "0" is OK!
-        $vers{$package} = $dwim_version;
+      if ( not exists $vers_raw{$package}[0] and defined $version ){
+        $vers_raw{$package} = [ $version, $line ];
       }
 
     # VERSION defined with full package spec, i.e. $Module::VERSION
@@ -603,21 +599,21 @@ sub _parse_fh {
       push( @packages, $version_package ) unless grep( $version_package eq $_, @packages );
       $need_vers = 0 if $version_package eq $package;
 
-      unless ( defined $vers{$version_package} && length $vers{$version_package} ) {
-        $vers{$version_package} = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
+      unless ( defined $vers_raw{$version_package}[0] && length $vers_raw{$version_package}[0] ) {
+        $vers_raw{$version_package} = [ $self->_evaluate_version_line( $version_sigil, $version_fullname, $line ), $line ];
       }
 
     # first non-comment line in undeclared package main is VERSION
-    } elsif ( $package eq 'main' && $version_fullname && !exists($vers{main}) ) {
+    } elsif ( $package eq 'main' && $version_fullname && !exists($vers_raw{main}[0]) ) {
       $need_vers = 0;
       my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
-      $vers{$package} = $v;
+      $vers_raw{$package} = [ $v, $line ];
       push( @packages, 'main' );
 
     # first non-comment line in undeclared package defines package main
-    } elsif ( $package eq 'main' && !exists($vers{main}) && $line =~ /\w/ ) {
+    } elsif ( $package eq 'main' && !exists($vers_raw{main}[0]) && $line =~ /\w/ ) {
       $need_vers = 1;
-      $vers{main} = '';
+      $vers_raw{main} = [ '', $line ];
       push( @packages, 'main' );
 
     # only keep if this is the first $VERSION seen
@@ -625,8 +621,8 @@ sub _parse_fh {
       $need_vers = 0;
       my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
 
-      unless ( defined $vers{$package} && length $vers{$package} ) {
-        $vers{$package} = $v;
+      unless ( exists $vers_raw{$package}[0]  && length $vers{$package}[0] ) {
+        $vers_raw{$package} = [ $v, $line ];
       }
     }
 
@@ -636,6 +632,20 @@ sub _parse_fh {
     $pod{$pod_sect} = $pod_data;
   }
 
+  # Upgrade the found versions into version objects
+  foreach my $package (keys %vers_raw) {
+    # watch out for autovivification at the first level of the hash
+    delete($vers_raw{$package}), next if not exists $vers_raw{$package}[0];
+    my $version = eval { _dwim_version($vers_raw{$package}[0]) };
+
+    croak "Version '$vers_raw{$package}[0]' from $self->{filename} does not appear to be valid:\n$vers_raw{$package}[1]\n\nThe fatal error was: $@\n"
+      unless defined $version; # "0" is OK!
+
+    $vers_raw{$package} = $vers_raw{$package}[0];
+    $vers{$package} = $version;
+  }
+
+  $self->{versions_raw} = \%vers_raw;
   $self->{versions} = \%vers;
   $self->{packages} = \@packages;
   $self->{pod} = \%pod;
@@ -683,14 +693,7 @@ sub _evaluate_version_line {
   croak "Could not get version from $self->{filename} by executing:\n$eval\n\nThe fatal error was: $@\n"
     if $@;
 
-  # Upgrade it into a version object
-  my $version = eval { _dwim_version($result) };
-
-  # FIXME: $eval is not the right thing to print here
-  croak "Version '$result' from $self->{filename} does not appear to be valid:\n$eval\n\nThe fatal error was: $@\n"
-    unless defined $version; # "0" is OK!
-
-  return $version;
+  return $result;
 }
 }
 
