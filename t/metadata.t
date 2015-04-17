@@ -123,6 +123,11 @@ package Simple;
 $Simple2::VERSION = '999';
 $VERSION = 1.23;
 ---
+  '1.23' => <<'---', # Differentiate fully qualified $VERSION and unqualified, other order
+package Simple;
+$VERSION = 1.23;
+$Simple2::VERSION = '999';
+---
   '1.23' => <<'---', # $VERSION declared as package variable from within 'main' package
 $Simple::VERSION = '1.23';
 {
