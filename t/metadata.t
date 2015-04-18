@@ -262,6 +262,11 @@ our $VERSION = # Hide from PAUSE
      '1.967009';
 $VERSION = eval $VERSION;
 ---
+# from MBARBON/Module-Info-0.30.tar.gz
+  '0.30' => <<'---',
+package Simple;
+$VERSION = eval 'use version; 1' ? 'version'->new('0.30') : '0.30';
+---
 );
 
 # format: expected package name => code snippet
