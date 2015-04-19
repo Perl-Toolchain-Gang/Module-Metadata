@@ -1,6 +1,8 @@
 Revision history for Module-Metadata
 
 {{$NEXT}}
+  - now extracting module version a Safe compartment in a subprocess
+    (RT#89283)
 
 1.000027  2015-04-11 00:21:26Z
   - work around issues with an unconfigured Log::Contextual (Kent Fredric)

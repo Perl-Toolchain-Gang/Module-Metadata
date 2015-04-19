@@ -10,7 +10,6 @@ package Module::Metadata;
 # perl modules (assuming this may be expanded in the distant
 # parrot future to look at other types of modules).
 
-sub __clean_eval { eval $_[0] }
 use strict;
 use warnings;
 
@@ -25,6 +24,9 @@ BEGIN {
        } or *SEEK_SET = sub { 0 }
 }
 use version 0.87;
+use Module::Metadata::ExtractVersion 'eval_version';
+
+
 BEGIN {
   if ($INC{'Log/Contextual.pm'}) {
     require "Log/Contextual/WarnLogger.pm"; # Hide from AutoPrereqs
@@ -514,7 +516,7 @@ sub _parse_fh {
   my ($self, $fh) = @_;
 
   my( $in_pod, $seen_end, $need_vers ) = ( 0, 0, 0 );
-  my( @packages, %vers, %pod, @pod );
+  my( @packages, %vers_raw, %vers, %pod, @pod );
   my $package = 'main';
   my $pod_sect = '';
   my $pod_data = '';
@@ -590,12 +592,8 @@ sub _parse_fh {
       push( @packages, $package ) unless grep( $package eq $_, @packages );
       $need_vers = defined $version ? 0 : 1;
 
-      if ( not exists $vers{$package} and defined $version ){
-        # Upgrade to a version object.
-        my $dwim_version = eval { _dwim_version($version) };
-        croak "Version '$version' from $self->{filename} does not appear to be valid:\n$line\n\nThe fatal error was: $@\n"
-            unless defined $dwim_version;  # "0" is OK!
-        $vers{$package} = $dwim_version;
+      if ( not exists $vers_raw{$package}[0] and defined $version ){
+        $vers_raw{$package} = [ $version, $line ];
       }
 
     # VERSION defined with full package spec, i.e. $Module::VERSION
@@ -603,30 +601,30 @@ sub _parse_fh {
       push( @packages, $version_package ) unless grep( $version_package eq $_, @packages );
       $need_vers = 0 if $version_package eq $package;
 
-      unless ( defined $vers{$version_package} && length $vers{$version_package} ) {
-      $vers{$version_package} = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
-    }
+      unless ( defined $vers_raw{$version_package}[0] && length $vers_raw{$version_package}[0] ) {
+        $vers_raw{$version_package} = [ eval_version($line), $line ];
+      }
 
     # first non-comment line in undeclared package main is VERSION
-    } elsif ( $package eq 'main' && $version_fullname && !exists($vers{main}) ) {
+    } elsif ( $package eq 'main' && $version_fullname && !exists($vers_raw{main}[0]) ) {
       $need_vers = 0;
-      my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
-      $vers{$package} = $v;
+      my $v = eval_version($line);
+      $vers_raw{$package} = [ $v, $line ];
       push( @packages, 'main' );
 
     # first non-comment line in undeclared package defines package main
-    } elsif ( $package eq 'main' && !exists($vers{main}) && $line =~ /\w/ ) {
+    } elsif ( $package eq 'main' && !exists($vers_raw{main}[0]) && $line =~ /\w/ ) {
       $need_vers = 1;
-      $vers{main} = '';
+      $vers_raw{main} = [ '', $line ];
       push( @packages, 'main' );
 
     # only keep if this is the first $VERSION seen
     } elsif ( $version_fullname && $need_vers ) {
       $need_vers = 0;
-      my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
+      my $v = eval_version($line);
 
-      unless ( defined $vers{$package} && length $vers{$package} ) {
-        $vers{$package} = $v;
+      unless ( exists $vers_raw{$package}[0]  && length $vers_raw{$package}[0] ) {
+        $vers_raw{$package} = [ $v, $line ];
       }
     }
 
@@ -636,62 +634,24 @@ sub _parse_fh {
     $pod{$pod_sect} = $pod_data;
   }
 
+  # Upgrade the found versions into version objects
+  foreach my $package (keys %vers_raw) {
+    # watch out for autovivification at the first level of the hash
+    delete($vers_raw{$package}), next if not exists $vers_raw{$package}[0];
+    my $version = eval { _dwim_version($vers_raw{$package}[0]) };
+
+    croak "Version '$vers_raw{$package}[0]' from $self->{filename} does not appear to be valid:\n$vers_raw{$package}[1]\n\nThe fatal error was: $@\n"
+      unless defined $version; # "0" is OK!
+
+    $vers_raw{$package} = $vers_raw{$package}[0];
+    $vers{$package} = $version;
+  }
+
+  $self->{versions_raw} = \%vers_raw;
   $self->{versions} = \%vers;
   $self->{packages} = \@packages;
   $self->{pod} = \%pod;
   $self->{pod_headings} = \@pod;
-}
-
-{
-my $pn = 0;
-sub _evaluate_version_line {
-  my $self = shift;
-  my( $sigil, $variable_name, $line ) = @_;
-
-  # We compile into a local sub because 'use version' would cause
-  # compiletime/runtime issues with local()
-  $pn++; # everybody gets their own package
-  my $eval = qq{ my \$dummy = q#  Hide from _packages_inside()
-    #; package Module::Metadata::_version::p${pn};
-    use version;
-    sub {
-      local $sigil$variable_name;
-      $line;
-      \$$variable_name
-    };
-  };
-
-  $eval = $1 if $eval =~ m{^(.+)}s;
-
-  local $^W;
-  # Try to get the $VERSION
-  my $vsub = __clean_eval($eval);
-  # some modules say $VERSION <equal sign> $Foo::Bar::VERSION, but Foo::Bar isn't
-  # installed, so we need to hunt in ./lib for it
-  if ( $@ =~ /Can't locate/ && -d 'lib' ) {
-    local @INC = ('lib',@INC);
-    $vsub = __clean_eval($eval);
-  }
-  warn "Error evaling version line '$eval' in $self->{filename}: $@\n"
-    if $@;
-
-  (ref($vsub) eq 'CODE') or
-    croak "failed to build version sub for $self->{filename}";
-
-  my $result = eval { $vsub->() };
-  # FIXME: $eval is not the right thing to print here
-  croak "Could not get version from $self->{filename} by executing:\n$eval\n\nThe fatal error was: $@\n"
-    if $@;
-
-  # Upgrade it into a version object
-  my $version = eval { _dwim_version($result) };
-
-  # FIXME: $eval is not the right thing to print here
-  croak "Version '$result' from $self->{filename} does not appear to be valid:\n$eval\n\nThe fatal error was: $@\n"
-    unless defined $version; # "0" is OK!
-
-  return $version;
-}
 }
 
 # Try to DWIM when things fail the lax version test in obvious ways
