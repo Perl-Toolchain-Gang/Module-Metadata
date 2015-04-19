@@ -15,71 +15,126 @@ use Data::Dumper;
 my $undef;
 
 # parse various module $VERSION lines
-# format: expected version => code snippet
+# format: {
+#   name => test name
+#   code => code snippet (string)
+#   vers => expected version object (in stringified form),
+# }
 my @modules = (
-  $undef => <<'---', # no $VERSION line
+{
+  vers => $undef,
+  name => 'no $VERSION line',
+  code => <<'---',
 package Simple;
 ---
-  $undef => <<'---', # undefined $VERSION
+},
+{
+  vers => $undef,
+  name => 'undefined $VERSION',
+  code => <<'---',
 package Simple;
 our $VERSION;
 ---
-  '1.23' => <<'---', # declared & defined on same line with 'our'
+},
+{
+  vers => '1.23',
+  name => 'declared & defined on same line with "our"',
+  code => <<'---',
 package Simple;
 our $VERSION = '1.23';
 ---
-  '1.23' => <<'---', # declared & defined on separate lines with 'our'
+},
+{
+  vers => '1.23',
+  name => 'declared & defined on separate lines with "our"',
+  code => <<'---',
 package Simple;
 our $VERSION;
 $VERSION = '1.23';
 ---
-  '1.23' => <<'---', # commented & defined on same line
+},
+{
+  vers => '1.23',
+  name => 'commented & defined on same line',
+  code => <<'---',
 package Simple;
 our $VERSION = '1.23'; # our $VERSION = '4.56';
 ---
-  '1.23' => <<'---', # commented & defined on separate lines
+},
+{
+  vers =>'1.23',
+  name => 'commented & defined on separate lines',
+  code => <<'---',
 package Simple;
 # our $VERSION = '4.56';
 our $VERSION = '1.23';
 ---
-  '1.23' => <<'---', # use vars
+},
+{
+  vers => '1.23',
+  name => 'use vars',
+  code => <<'---',
 package Simple;
 use vars qw( $VERSION );
 $VERSION = '1.23';
 ---
-  '1.23' => <<'---', # choose the right default package based on package/file name
+},
+{
+  vers => '1.23',
+  name => 'choose the right default package based on package/file name',
+  code => <<'---',
 package Simple::_private;
 $VERSION = '0';
 package Simple;
 $VERSION = '1.23'; # this should be chosen for version
 ---
-  '1.23' => <<'---', # just read the first $VERSION line
+},
+{
+  vers => '1.23',
+  name => 'just read the first $VERSION line',
+  code => <<'---',
 package Simple;
 $VERSION = '1.23'; # we should see this line
 $VERSION = eval $VERSION; # and ignore this one
 ---
-  '1.23' => <<'---', # just read the first $VERSION line in reopened package (1)
+},
+{
+  vers => '1.23',
+  name => 'just read the first $VERSION line in reopened package (1)',
+  code => <<'---',
 package Simple;
 $VERSION = '1.23';
 package Error::Simple;
 $VERSION = '2.34';
 package Simple;
 ---
-  '1.23' => <<'---', # just read the first $VERSION line in reopened package (2)
+},
+{
+  vers => '1.23',
+  name => 'just read the first $VERSION line in reopened package (2)',
+  code => <<'---',
 package Simple;
 package Error::Simple;
 $VERSION = '2.34';
 package Simple;
 $VERSION = '1.23';
 ---
-  '1.23' => <<'---', # mentions another module's $VERSION
+},
+{
+  vers => '1.23',
+  name => 'mentions another module\'s $VERSION',
+  code => <<'---',
 package Simple;
 $VERSION = '1.23';
 if ( $Other::VERSION ) {
     # whatever
 }
 ---
-  '1.23' => <<'---', # mentions another module's $VERSION in a different package
+},
+{
+  vers => '1.23',
+  name => 'mentions another module\'s $VERSION in a different package',
+  code => <<'---',
 package Simple;
 $VERSION = '1.23';
 package Simple2;
@@ -87,21 +142,33 @@ if ( $Simple::VERSION ) {
     # whatever
 }
 ---
-  '1.23' => <<'---', # $VERSION checked only in assignments, not regexp ops
+},
+{
+  vers => '1.23',
+  name => '$VERSION checked only in assignments, not regexp ops',
+  code => <<'---',
 package Simple;
 $VERSION = '1.23';
 if ( $VERSION =~ /1\.23/ ) {
     # whatever
 }
 ---
-  '1.23' => <<'---', # $VERSION checked only in assignments, not relational ops
+},
+{
+  vers => '1.23',
+  name => '$VERSION checked only in assignments, not relational ops',
+  code => <<'---',
 package Simple;
 $VERSION = '1.23';
 if ( $VERSION == 3.45 ) {
     # whatever
 }
 ---
-  '1.23' => <<'---', # $VERSION checked only in assignments, not relational ops
+},
+{
+  vers => '1.23',
+  name => '$VERSION checked only in assignments, not relational ops',
+  code => <<'---',
 package Simple;
 $VERSION = '1.23';
 package Simple2;
@@ -109,33 +176,57 @@ if ( $Simple::VERSION == 3.45 ) {
     # whatever
 }
 ---
-  '1.23' => <<'---', # Fully qualified $VERSION declared in package
+},
+{
+  vers => '1.23',
+  name => 'Fully qualified $VERSION declared in package',
+  code => <<'---',
 package Simple;
 $Simple::VERSION = 1.23;
 ---
-  '1.23' => <<'---', # Differentiate fully qualified $VERSION in a package
+},
+{
+  vers => '1.23',
+  name => 'Differentiate fully qualified $VERSION in a package',
+  code => <<'---',
 package Simple;
 $Simple2::VERSION = '999';
 $Simple::VERSION = 1.23;
 ---
-  '1.23' => <<'---', # Differentiate fully qualified $VERSION and unqualified
+},
+{
+  vers => '1.23',
+  name => 'Differentiate fully qualified $VERSION and unqualified',
+  code => <<'---',
 package Simple;
 $Simple2::VERSION = '999';
 $VERSION = 1.23;
 ---
-  '1.23' => <<'---', # Differentiate fully qualified $VERSION and unqualified, other order
+},
+{
+  vers => '1.23',
+  name => 'Differentiate fully qualified $VERSION and unqualified, other order',
+  code => <<'---',
 package Simple;
 $VERSION = 1.23;
 $Simple2::VERSION = '999';
 ---
-  '1.23' => <<'---', # $VERSION declared as package variable from within 'main' package
+},
+{
+  vers => '1.23',
+  name => '$VERSION declared as package variable from within "main" package',
+  code => <<'---',
 $Simple::VERSION = '1.23';
 {
   package Simple;
   $x = $y, $cats = $dogs;
 }
 ---
-  '1.23' => <<'---', # $VERSION wrapped in parens - space inside
+},
+{
+  vers => '1.23',
+  name => '$VERSION wrapped in parens - space inside',
+  code => <<'---',
 package Simple;
 ( $VERSION ) = '1.23';
 ---
@@ -143,7 +234,11 @@ package Simple;
 package Simple;
 ($VERSION) = '1.23';
 ---
-  '1.23' => <<'---', # $VERSION follows a spurious 'package' in a quoted construct
+},
+{
+  vers => '1.23',
+  name => '$VERSION follows a spurious "package" in a quoted construct',
+  code => <<'---',
 package Simple;
 __PACKAGE__->mk_accessors(qw(
     program socket proc
@@ -151,173 +246,333 @@ __PACKAGE__->mk_accessors(qw(
 
 our $VERSION = "1.23";
 ---
-  '1.23' => <<'---', # $VERSION using version.pm
+},
+{
+  vers => '1.23',
+  name => '$VERSION using version.pm',
+  code => <<'---',
   package Simple;
   use version; our $VERSION = version->new('1.23');
 ---
-  'v1.230' => <<'---', # $VERSION using version.pm and qv()
+},
+{
+  vers => 'v1.230',
+  name => '$VERSION using version.pm and qv()',
+  code => <<'---',
   package Simple;
   use version; our $VERSION = qv('1.230');
 ---
-  '1.23_01' => <<'---', # underscore version with an eval
+},
+{
+  vers => '1.23_01',
+  name => 'underscore version with an eval',
+  code => <<'---',
   package Simple;
   $VERSION = '1.23_01';
   $VERSION = eval $VERSION;
 ---
-  '1.230' => <<'---', # Two version assignments, should ignore second one
+},
+{
+  vers => '1.230',
+  name => 'Two version assignments, should ignore second one',
+  code => <<'---',
   $Simple::VERSION = '1.230';
   $Simple::VERSION = eval $Simple::VERSION;
 ---
-  '1.230000' => <<'---', # declared & defined on same line with 'our'
+},
+{
+  vers => '1.230000',
+  name => 'declared & defined on same line with "our"',
+  code => <<'---',
 package Simple;
 our $VERSION = '1.23_00_00';
 ---
-  '1.23' => <<'---', # package NAME VERSION
+},
+{
+  vers => '1.23',
+  name => 'package NAME VERSION',
+  code => <<'---',
   package Simple 1.23;
 ---
-  '1.23_01' => <<'---', # package NAME VERSION
+},
+{
+  vers => '1.23_01',
+  name => 'package NAME VERSION',
+  code => <<'---',
   package Simple 1.23_01;
 ---
-  'v1.2.3' => <<'---', # package NAME VERSION
+},
+{
+  vers => 'v1.2.3',
+  name => 'package NAME VERSION',
+  code => <<'---',
   package Simple v1.2.3;
 ---
-  'v1.2_3' => <<'---', # package NAME VERSION
+},
+{
+  vers => 'v1.2_3',
+  name => 'package NAME VERSION',
+  code => <<'---',
   package Simple v1.2_3;
 ---
-  '1.23' => <<'---', # trailing crud
+},
+{
+  vers => '1.23',
+  name => 'trailing crud',
+  code => <<'---',
   package Simple;
   our $VERSION;
   $VERSION = '1.23-alpha';
 ---
-  '1.23' => <<'---', # trailing crud
+},
+{
+  vers => '1.23',
+  name => 'trailing crud',
+  code => <<'---',
   package Simple;
   our $VERSION;
   $VERSION = '1.23b';
 ---
-  '1.234' => <<'---', # multi_underscore
+},
+{
+  vers => '1.234',
+  name => 'multi_underscore',
+  code => <<'---',
   package Simple;
   our $VERSION;
   $VERSION = '1.2_3_4';
 ---
-  '0' => <<'---', # non-numeric
+},
+{
+  vers => '0',
+  name => 'non-numeric',
+  code => <<'---',
   package Simple;
   our $VERSION;
   $VERSION = 'onetwothree';
 ---
-  $undef => <<'---', # package NAME BLOCK, undef $VERSION
+},
+{
+  vers => $undef,
+  name => 'package NAME BLOCK, undef $VERSION',
+  code => <<'---',
 package Simple {
   our $VERSION;
 }
 ---
-  '1.23' => <<'---', # package NAME BLOCK, with $VERSION
+},
+{
+  vers => '1.23',
+  name => 'package NAME BLOCK, with $VERSION',
+  code => <<'---',
 package Simple {
   our $VERSION = '1.23';
 }
 ---
-  '1.23' => <<'---', # package NAME VERSION BLOCK
+},
+{
+  vers => '1.23',
+  name => 'package NAME VERSION BLOCK',
+  code => <<'---',
 package Simple 1.23 {
   1;
 }
 ---
-  'v1.2.3_4' => <<'---', # package NAME VERSION BLOCK
+},
+{
+  vers => 'v1.2.3_4',
+  name => 'package NAME VERSION BLOCK',
+  code => <<'---',
 package Simple v1.2.3_4 {
   1;
 }
 ---
-  '0' => <<'---', # set from separately-initialised variable, two lines
+},
+{
+  vers => '0',
+  name => 'set from separately-initialised variable, two lines',
+  code => <<'---',
 package Simple;
   our $CVSVERSION   = '$Revision: 1.7 $';
   our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 }
 ---
-  'v2.2.102.2' => <<'---', # our + bare v-string
+},
+{
+  vers => 'v2.2.102.2',
+  name => 'our + bare v-string',
+  code => <<'---',
 package Simple;
 our $VERSION     = v2.2.102.2;
 ---
-  '0.0.9_1' => <<'---', # our + dev release
+},
+{
+  vers => '0.0.9_1',
+  name => 'our + dev release',
+  code => <<'---',
 package Simple;
 our $VERSION = "0.0.9_1";
 ---
-  '1.12' => <<'---', # our + crazy string and substitution code
+},
+{
+  vers => '1.12',
+  name => 'our + crazy string and substitution code',
+  code => <<'---',
 package Simple;
 our $VERSION     = '1.12.B55J2qn'; our $WTF = $VERSION; $WTF =~ s/^\d+\.\d+\.//; # attempts to rationalize $WTF go here.
 ---
-  '1.12' => <<'---', # our in braces, as in Dist::Zilla::Plugin::PkgVersion with use_our = 1
+},
+{
+  vers => '1.12',
+  name => 'our in braces, as in Dist::Zilla::Plugin::PkgVersion with use_our = 1',
+  code => <<'---',
 package Simple;
 { our $VERSION = '1.12'; }
 ---
-  sub { defined $_[0] and $_[0] =~ /^3\.14159/ } => <<'---', # calculated version - from Acme-Pi-3.14
+},
+{
+  vers => sub { defined $_[0] and $_[0] =~ /^3\.14159/ },
+  name => 'calculated version - from Acme-Pi-3.14',
+  code => <<'---',
 package Simple;
 my $version = atan2(1,1) * 4; $Simple::VERSION = "$version";
 1;
 ---
-  '1.7' => <<'---', # set from separately-initialised variable, one line
+},
+{
+  vers => '1.7',
+  name => 'set from separately-initialised variable, one line',
+  code => <<'---',
 package Simple;
   my $CVSVERSION   = '$Revision: 1.7 $'; our ($VERSION) = ($CVSVERSION =~ /(\d+\.\d+)/);
 }
 ---
-# from Lingua-StopWords-0.09/devel/gen_modules.plx
-  $undef => <<'---',
+},
+{
+  vers => $undef,
+  name => 'from Lingua-StopWords-0.09/devel/gen_modules.plx',
+  code => <<'---',
 package Foo;
 our $VERSION = $Bar::VERSION;
 ---
-# from XML-XSH2-2.1.17/lib/XML/XSH2/Parser.pm
-  $undef => <<'---',
+},
+{
+  vers => $undef,
+  name => 'from XML-XSH2-2.1.17/lib/XML/XSH2/Parser.pm',
+  code => <<'---',
 our $VERSION = # Hide from PAUSE
      '1.967009';
 $VERSION = eval $VERSION;
 ---
-# from MBARBON/Module-Info-0.30.tar.gz
-  '0.30' => <<'---',
+},
+{
+  vers => '0.30',
+  name => 'from MBARBON/Module-Info-0.30.tar.gz',
+  code => <<'---',
 package Simple;
 $VERSION = eval 'use version; 1' ? 'version'->new('0.30') : '0.30';
 ---
+},
 );
 
-# format: expected package name => code snippet
+# parse package names
+# format: {
+#   name => test name
+#   code => code snippet (string)
+#   package => expected package names
+# }
 my @pkg_names = (
-  [ 'Simple' ] => <<'---', # package NAME
+{
+  name => 'package NAME',
+  package => [ 'Simple' ],
+  code => <<'---',
 package Simple;
 ---
-  [ 'Simple::Edward' ] => <<'---', # package NAME::SUBNAME
+},
+{
+  name => 'package NAME::SUBNAME',
+  package => [ 'Simple::Edward' ],
+  code => <<'---',
 package Simple::Edward;
 ---
-  [ 'Simple::Edward::' ] => <<'---', # package NAME::SUBNAME::
+},
+{
+  name => 'package NAME::SUBNAME::',
+  package => [ 'Simple::Edward::' ],
+  code => <<'---',
 package Simple::Edward::;
 ---
-  [ "Simple'Edward" ] => <<'---', # package NAME'SUBNAME
+},
+{
+  name => "package NAME'SUBNAME",
+  package => [ "Simple'Edward" ],
+  code => <<'---',
 package Simple'Edward;
 ---
-  [ "Simple'Edward::" ] => <<'---', # package NAME'SUBNAME::
+},
+{
+  name => "package NAME'SUBNAME::",
+  package => [ "Simple'Edward::" ],
+  code => <<'---',
 package Simple'Edward::;
 ---
-  [ 'Simple::::Edward' ] => <<'---', # package NAME::::SUBNAME
+},
+{
+  name => 'package NAME::::SUBNAME',
+  package => [ 'Simple::::Edward' ],
+  code => <<'---',
 package Simple::::Edward;
 ---
-  [ '::Simple::Edward' ] => <<'---', # package ::NAME::SUBNAME
+},
+{
+  name => 'package ::NAME::SUBNAME',
+  package => [ '::Simple::Edward' ],
+  code => <<'---',
 package ::Simple::Edward;
 ---
-  [ 'main' ] => <<'---', # package NAME:SUBNAME (fail)
+},
+{
+  name => 'package NAME:SUBNAME (fail)',
+  package => [ 'main' ],
+  code => <<'---',
 package Simple:Edward;
 ---
-  [ 'main' ] => <<'---', # package NAME' (fail)
+},
+{
+  name => "package NAME' (fail)",
+  package => [ 'main' ],
+  code => <<'---',
 package Simple';
 ---
-  [ 'main' ] => <<'---', # package NAME::SUBNAME' (fail)
+},
+{
+  name => "package NAME::SUBNAME' (fail)",
+  package => [ 'main' ],
+  code => <<'---',
 package Simple::Edward';
 ---
-  [ 'main' ] => <<'---', # package NAME''SUBNAME (fail)
+},
+{
+  name => "package NAME''SUBNAME (fail)",
+  package => [ 'main' ],
+  code => <<'---',
 package Simple''Edward;
 ---
-  [ 'main' ] => <<'---', # package NAME-SUBNAME (fail)
+},
+{
+  name => 'package NAME-SUBNAME (fail)',
+  package => [ 'main' ],
+  code => <<'---',
 package Simple-Edward;
 ---
+},
 );
 
-# 2 tests per each pair of @modules (plus 1 for defined keys), 2 per pair of @pkg_names
+# 2 tests for each entry in @modules (plus 1 for defined 'vers'),
+# 2 tests for each entry in @pkg_names
 plan tests => 61
-  + ( @modules + grep { defined $modules[2*$_] } 0..$#modules/2 )
-  + ( @pkg_names );
+  + ( 2*@modules + grep { defined $modules[$_]{vers} } 0..$#modules )
+  + ( 2*@pkg_names );
 
 require_ok('Module::Metadata');
 
@@ -426,10 +681,11 @@ END {
 }
 
 
-# iterate through @modules pairwise
-my $test_case = 0;
-while (++$test_case and my ($expected_version, $code) = splice @modules, 0, 2 ) {
- SKIP: {
+# iterate through @modules
+foreach my $test_case (@modules) {
+  my $code = $test_case->{code};
+  my $expected_version = $test_case->{vers};
+  SKIP: {
     skip( "No our() support until perl 5.6", (defined $expected_version ? 3 : 2) )
         if $] < 5.006 && $code =~ /\bour\b/;
     skip( "No package NAME VERSION support until perl 5.11.1", (defined $expected_version ? 3 : 2) )
@@ -454,7 +710,7 @@ while (++$test_case and my ($expected_version, $code) = splice @modules, 0, 2 ) 
     if (ref($expected_version) eq 'CODE') {
       ok(
         $expected_version->($got),
-        "case $test_case: module version passes match sub"
+        "case '$test_case->{name}': module version passes match sub"
       )
       or $errs++;
     }
@@ -462,20 +718,21 @@ while (++$test_case and my ($expected_version, $code) = splice @modules, 0, 2 ) 
       is(
         (defined $got ? "$got" : $got),
         $expected_version,
-        "case $test_case: correct module version ("
+        "case '$test_case->{name}': correct module version ("
           . (defined $expected_version? "'$expected_version'" : 'undef')
           . ')'
       )
       or $errs++;
     }
 
-    is( $warnings, '', "case $test_case: no warnings from parsing" ) or $errs++;
+    is( $warnings, '', "case '$test_case->{name}': no warnings from parsing" ) or $errs++;
     diag Dumper({ got => $pm_info->version, module_contents => $code }) if $errs;
   }
 }
 
-$test_case = 0;
-while (++$test_case and my ($expected_name, $code) = splice @pkg_names, 0, 2) {
+foreach my $test_case (@pkg_names) {
+    my $code = $test_case->{code};
+    my $expected_name = $test_case->{package};
     my $file = File::Spec->catfile('lib', 'Simple.pm');
     my ($dist_name, $dist_dir) = new_dist(files => { $file => $code });
 
@@ -487,9 +744,9 @@ while (++$test_case and my ($expected_name, $code) = splice @pkg_names, 0, 2) {
     my $errs;
     my @got = $pm_info->packages_inside();
     is_deeply( \@got, $expected_name,
-               "case $test_case: correct package names (expected '" . join(', ', @$expected_name) . "')" )
+               "case $test_case->{name}: correct package names (expected '" . join(', ', @$expected_name) . "')" )
             or $errs++;
-    is( $warnings, '', "case $test_case: no warnings from parsing" ) or $errs++;
+    is( $warnings, '', "case $test_case->{name}: no warnings from parsing" ) or $errs++;
     diag "Got: '" . join(', ', @got) . "'\nModule contents:\n$code" if $errs;
 }
 
