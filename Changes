@@ -1,6 +1,7 @@
 Revision history for Module-Metadata
 
 {{$NEXT}}
+  - refactored and expanded test cases
 
 1.000027  2015-04-11 00:21:26Z
   - work around issues with an unconfigured Log::Contextual (Kent Fredric)
