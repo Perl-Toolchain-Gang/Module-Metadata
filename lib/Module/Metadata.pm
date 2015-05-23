@@ -1000,6 +1000,8 @@ Returns the POD data in the given section.
 
 =head2 C<< is_indexable($package) >> or C<< is_indexable() >>
 
+Available since version 1.000020.
+
 Returns a boolean indicating whether the package (if provided) or any package
 (otherwise) is eligible for indexing by PAUSE, the Perl Authors Upload Server.
 Note This only checks for valid C<package> declarations, and does not take any
