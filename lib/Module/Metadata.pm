@@ -31,7 +31,8 @@ BEGIN {
     Log::Contextual->import('log_info',
       '-default_logger' => Log::Contextual::WarnLogger->new({ env_prefix => 'MODULE_METADATA', }),
     );
-  } else {
+  }
+  else {
     *log_info = sub (&) { warn $_[0]->() };
   }
 }
@@ -174,10 +175,12 @@ sub new_from_module {
           if ( defined( $version ) ) {
             if ( $compare_versions->( $version, '!=', $p->{version} ) ) {
               $err .= "  $p->{file} ($p->{version})\n";
-            } else {
+            }
+            else {
               # same version declared multiple times, ignore
             }
-          } else {
+          }
+          else {
             $file    = $p->{file};
             $version = $p->{version};
           }
@@ -243,7 +246,8 @@ sub new_from_module {
 
     if ( $files ) {
       @files = @$files;
-    } else {
+    }
+    else {
       find( {
         wanted => sub {
           push @files, $_ if -f $_ && /\.pm$/;
@@ -273,12 +277,14 @@ sub new_from_module {
         if ( $package eq $prime_package ) {
           if ( exists( $prime{$package} ) ) {
             croak "Unexpected conflict in '$package'; multiple versions found.\n";
-          } else {
+          }
+          else {
             $mapped_filename = "$package.pm" if lc("$package.pm") eq lc($mapped_filename);
             $prime{$package}{file} = $mapped_filename;
             $prime{$package}{version} = $version if defined( $version );
           }
-        } else {
+        }
+        else {
           push( @{$alt{$package}}, {
                                     file    => $mapped_filename,
                                     version => $version,
@@ -305,7 +311,8 @@ sub new_from_module {
             $result->{err}
           };
 
-        } elsif ( defined( $result->{version} ) ) {
+        }
+        elsif ( defined( $result->{version} ) ) {
         # There is a primary package selected, and exactly one
         # alternative package
 
@@ -325,19 +332,22 @@ sub new_from_module {
             };
           }
 
-        } else {
+        }
+        else {
           # The prime package selected has no version so, we choose to
           # use any alternative package that does have a version
           $prime{$package}{file}    = $result->{file};
           $prime{$package}{version} = $result->{version};
         }
 
-        } else {
+        }
+        else {
         # no alt package found with a version, but we have a prime
         # package so we use it whether it has a version or not
         }
 
-      } else { # No primary package was selected, use the best alternative
+      }
+      else { # No primary package was selected, use the best alternative
 
         if ( $result->{err} ) {
           log_info {
@@ -419,7 +429,7 @@ sub _init {
   }
 
   $self->{version} = $self->{versions}{$self->{module}}
-      if defined( $self->{module} );
+    if defined( $self->{module} );
 
   return $self;
 }
@@ -488,9 +498,11 @@ sub _handle_bom {
   my $encoding;
   if ( $buf eq "\x{FE}\x{FF}" ) {
     $encoding = 'UTF-16BE';
-  } elsif ( $buf eq "\x{FF}\x{FE}" ) {
+  }
+  elsif ( $buf eq "\x{FF}\x{FE}" ) {
     $encoding = 'UTF-16LE';
-  } elsif ( $buf eq "\x{EF}\x{BB}" ) {
+  }
+  elsif ( $buf eq "\x{EF}\x{BB}" ) {
     $buf = ' ';
     $count = read $fh, $buf, length $buf;
     if ( defined $count and $count >= 1 and $buf eq "\x{BF}" ) {
@@ -502,7 +514,8 @@ sub _handle_bom {
     if ( "$]" >= 5.008 ) {
       binmode( $fh, ":encoding($encoding)" );
     }
-  } else {
+  }
+  else {
     seek $fh, $pos, SEEK_SET
       or croak( sprintf "Can't reset position to the top of '$filename'" );
   }
@@ -545,23 +558,19 @@ sub _parse_fh {
           $pod_data = '';
         }
         $pod_sect = $1;
-
-      } elsif ( $self->{collect_pod} ) {
-        $pod_data .= "$line\n";
-
       }
-
+      elsif ( $self->{collect_pod} ) {
+        $pod_data .= "$line\n";
+      }
       next;
-
-    } elsif ( $is_cut ) {
-
+    }
+    elsif ( $is_cut ) {
       if ( $self->{collect_pod} && length( $pod_data ) ) {
         $pod{$pod_sect} = $pod_data;
         $pod_data = '';
       }
       $pod_sect = '';
       next;
-
     }
 
     # Skip after __END__
@@ -580,9 +589,9 @@ sub _parse_fh {
 
     # parse $line to see if it's a $VERSION declaration
     my( $version_sigil, $version_fullname, $version_package ) =
-        index($line, 'VERSION') >= 1
-            ? $self->_parse_version_expression( $line )
-            : ();
+      index($line, 'VERSION') >= 1
+        ? $self->_parse_version_expression( $line )
+        : ();
 
     if ( $line =~ /$PKG_REGEXP/o ) {
       $package = $1;
@@ -594,34 +603,38 @@ sub _parse_fh {
         # Upgrade to a version object.
         my $dwim_version = eval { _dwim_version($version) };
         croak "Version '$version' from $self->{filename} does not appear to be valid:\n$line\n\nThe fatal error was: $@\n"
-            unless defined $dwim_version;  # "0" is OK!
+          unless defined $dwim_version;  # "0" is OK!
         $vers{$package} = $dwim_version;
       }
+    }
 
     # VERSION defined with full package spec, i.e. $Module::VERSION
-    } elsif ( $version_fullname && $version_package ) {
+    elsif ( $version_fullname && $version_package ) {
       push( @packages, $version_package ) unless grep( $version_package eq $_, @packages );
       $need_vers = 0 if $version_package eq $package;
 
       unless ( defined $vers{$version_package} && length $vers{$version_package} ) {
-      $vers{$version_package} = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
+        $vers{$version_package} = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
+      }
     }
 
     # first non-comment line in undeclared package main is VERSION
-    } elsif ( $package eq 'main' && $version_fullname && !exists($vers{main}) ) {
+    elsif ( $package eq 'main' && $version_fullname && !exists($vers{main}) ) {
       $need_vers = 0;
       my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
       $vers{$package} = $v;
       push( @packages, 'main' );
+    }
 
     # first non-comment line in undeclared package defines package main
-    } elsif ( $package eq 'main' && !exists($vers{main}) && $line =~ /\w/ ) {
+    elsif ( $package eq 'main' && !exists($vers{main}) && $line =~ /\w/ ) {
       $need_vers = 1;
       $vers{main} = '';
       push( @packages, 'main' );
+    }
 
     # only keep if this is the first $VERSION seen
-    } elsif ( $version_fullname && $need_vers ) {
+    elsif ( $version_fullname && $need_vers ) {
       $need_vers = 0;
       my $v = $self->_evaluate_version_line( $version_sigil, $version_fullname, $line );
 
@@ -629,7 +642,6 @@ sub _parse_fh {
         $vers{$package} = $v;
       }
     }
-
   } # end loop over each line
 
   if ( $self->{collect_pod} && length($pod_data) ) {
@@ -769,7 +781,8 @@ sub version {
     if ( defined( $mod ) && length( $mod ) &&
          exists( $self->{versions}{$mod} ) ) {
         return $self->{versions}{$mod};
-    } else {
+    }
+    else {
         return undef;
     }
 }
@@ -780,7 +793,8 @@ sub pod {
     if ( defined( $sect ) && length( $sect ) &&
          exists( $self->{pod}{$sect} ) ) {
         return $self->{pod}{$sect};
-    } else {
+    }
+    else {
         return undef;
     }
 }
