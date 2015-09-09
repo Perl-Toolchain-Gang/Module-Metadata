@@ -297,8 +297,19 @@ our $VERSION = "1.23";
   all_versions => { Simple => '1.23_01' },
 },
 {
+  name => 'Two version assignments, no package',
+  code => <<'---',
+  $Simple::VERSION = '1.230';
+  $Simple::VERSION = eval $Simple::VERSION;
+---
+  vers => $undef,
+  all_versions => { Simple => '1.230' },
+  TODO => 'fix me! RT#85961',
+},
+{
   name => 'Two version assignments, should ignore second one',
   code => <<'---',
+package Simple;
   $Simple::VERSION = '1.230';
   $Simple::VERSION = eval $Simple::VERSION;
 ---
@@ -547,6 +558,15 @@ package Simple;
   vers => '1.23',
   all_versions => { Simple => '1.23' },
   TODO => 'apply fix from ExtUtils-MakeMaker PR#135',
+},
+{
+  name => 'no assumption of primary version merely if a package\'s $VERSION is referenced',
+  code => <<'---',
+package Simple;
+$Foo::Bar::VERSION = '1.23';
+---
+  vers => undef,
+  all_versions => { 'Foo::Bar' => '1.23' },
 },
 );
 

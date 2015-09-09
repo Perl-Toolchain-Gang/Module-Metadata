@@ -99,6 +99,15 @@ package Simple''Edward;
 package Simple-Edward;
 ---
 },
+{
+  name => 'no assumption of package merely if its $VERSION is referenced',
+  package => [ 'Simple' ],
+  code => <<'---',
+package Simple;
+$Foo::Bar::VERSION = '1.23';
+---
+  TODO => 'fix me! RT#85961',
+},
 );
 
 my $test_num = 0;
