@@ -525,6 +525,29 @@ $VERSION = eval 'use version; 1' ? 'version'->new('0.30') : '0.30';
   vers => '0.30',
   all_versions => { Simple => '0.30' },
 },
+{
+  name => '$VERSION inside BEGIN block',
+  code => <<'---',
+package Simple;
+  BEGIN { $VERSION = '1.23' }
+}
+---
+  vers => '1.23',
+  all_versions => { Simple => '1.23' },
+  TODO => 'apply fix from ExtUtils-MakeMaker PR#135',
+},
+{
+  name => 'our $VERSION inside BEGIN block',
+  code => <<'---',
+  '1.23' => <<'---', # our + BEGIN
+package Simple;
+  BEGIN { our $VERSION = '1.23' }
+}
+---
+  vers => '1.23',
+  all_versions => { Simple => '1.23' },
+  TODO => 'apply fix from ExtUtils-MakeMaker PR#135',
+},
 );
 
 my $test_num = 0;
