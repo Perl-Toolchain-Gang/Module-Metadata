@@ -106,7 +106,6 @@ package Simple-Edward;
 package Simple;
 $Foo::Bar::VERSION = '1.23';
 ---
-  TODO => 'fix me! RT#85961',
 },
 );
 

@@ -304,7 +304,6 @@ our $VERSION = "1.23";
 ---
   vers => $undef,
   all_versions => { Simple => '1.230' },
-  TODO => 'fix me! RT#85961',
 },
 {
   name => 'Two version assignments, should ignore second one',

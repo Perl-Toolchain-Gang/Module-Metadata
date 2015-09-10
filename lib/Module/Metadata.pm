@@ -419,12 +419,7 @@ sub _init {
       $self->{module} = shift(@candidates); # punt
     }
     else {
-      if(grep /main/, @{$self->{packages}}) {
-        $self->{module} = 'main';
-      }
-      else {
-        $self->{module} = $self->{packages}[0] || '';
-      }
+      $self->{module} = 'main';
     }
   }
 
@@ -610,7 +605,7 @@ sub _parse_fh {
 
     # VERSION defined with full package spec, i.e. $Module::VERSION
     elsif ( $version_fullname && $version_package ) {
-      push( @packages, $version_package ) unless grep( $version_package eq $_, @packages );
+      # we do NOT save this package in found @packages
       $need_vers = 0 if $version_package eq $package;
 
       unless ( defined $vers{$version_package} && length $vers{$version_package} ) {
