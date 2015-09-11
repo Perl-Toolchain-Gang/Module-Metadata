@@ -29,7 +29,6 @@ package Simple;
 {
   vers => $undef,
   all_versions => {},
-  name => 'no $VERSION line',
   name => 'undefined $VERSION',
   code => <<'---',
 package Simple;
