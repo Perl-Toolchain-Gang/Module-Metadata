@@ -1,8 +1,14 @@
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
 Module::Metadata - Gather package and POD information from perl module files
+
+=head1 VERSION
+
+version 1.000028
 
 =head1 SYNOPSIS
 
@@ -203,10 +209,23 @@ Returns the POD data in the given section.
 
 =head2 C<< is_indexable($package) >> or C<< is_indexable() >>
 
+Available since version 1.000020.
+
 Returns a boolean indicating whether the package (if provided) or any package
 (otherwise) is eligible for indexing by PAUSE, the Perl Authors Upload Server.
 Note This only checks for valid C<package> declarations, and does not take any
 ownership information into account.
+
+=head1 SUPPORT
+
+Bugs may be submitted through L<the RT bug tracker|https://rt.cpan.org/Public/Dist/Display.html?Name=Module-Metadata>
+(or L<bug-Module-Metadata@rt.cpan.org|mailto:bug-Module-Metadata@rt.cpan.org>).
+
+There is also a mailing list available for users of this distribution, at
+http://lists.perl.org/list/cpan-workers.html.
+
+There is also an irc channel available for users of this distribution, at
+irc://irc.perl.org/#toolchain.
 
 =head1 AUTHOR
 
@@ -215,6 +234,98 @@ Original code from Module::Build::ModuleInfo by Ken Williams
 
 Released as Module::Metadata by Matt S Trout (mst) <mst@shadowcat.co.uk> with
 assistance from David Golden (xdg) <dagolden@cpan.org>.
+
+=head1 CONTRIBUTORS
+
+=for stopwords Karen Etheridge David Golden Vincent Pit Matt S Trout Chris Nehren Graham Knop Olivier Mengué Tomas Doran Tatsuhiko Miyagawa tokuhirom Peter Rabbitson Jerry D. Hedden Craig A. Berry Mitchell Steinbrunner Edward Zborowski Gareth Harper James Raspass 'BinGOs' Williams Josh Jore Kent Fredric
+
+=over 4
+
+=item *
+
+Karen Etheridge <ether@cpan.org>
+
+=item *
+
+David Golden <dagolden@cpan.org>
+
+=item *
+
+Vincent Pit <perl@profvince.com>
+
+=item *
+
+Matt S Trout <mst@shadowcat.co.uk>
+
+=item *
+
+Chris Nehren <apeiron@cpan.org>
+
+=item *
+
+Graham Knop <haarg@haarg.org>
+
+=item *
+
+Olivier Mengué <dolmen@cpan.org>
+
+=item *
+
+Tomas Doran <bobtfish@bobtfish.net>
+
+=item *
+
+Tatsuhiko Miyagawa <miyagawa@bulknews.net>
+
+=item *
+
+tokuhirom <tokuhirom@gmail.com>
+
+=item *
+
+Peter Rabbitson <ribasushi@cpan.org>
+
+=item *
+
+Jerry D. Hedden <jdhedden@cpan.org>
+
+=item *
+
+Craig A. Berry <cberry@cpan.org>
+
+=item *
+
+David Mitchell <davem@iabyn.com>
+
+=item *
+
+David Steinbrunner <dsteinbrunner@pobox.com>
+
+=item *
+
+Edward Zborowski <ed@rubensteintech.com>
+
+=item *
+
+Gareth Harper <gareth@broadbean.com>
+
+=item *
+
+James Raspass <jraspass@gmail.com>
+
+=item *
+
+Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+
+=item *
+
+Josh Jore <jjore@cpan.org>
+
+=item *
+
+Kent Fredric <kentnl@cpan.org>
+
+=back
 
 =head1 COPYRIGHT & LICENSE
 
