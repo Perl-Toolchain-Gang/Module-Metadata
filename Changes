@@ -1,6 +1,8 @@
 Revision history for Module-Metadata
 
 {{$NEXT}}
+  - fix missing "use" statement in refactored test helper (only affected older
+    perls, due to other module interactions)
 
 1.000028  2015-09-11 04:24:39Z (TRIAL RELEASE)
   - refactored and expanded test cases

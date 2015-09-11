@@ -10,6 +10,7 @@ use Cwd;
 use File::Spec;
 use File::Path;
 use File::Temp;
+use IO::File;
 
 sub tmpdir {
   File::Temp::tempdir(
