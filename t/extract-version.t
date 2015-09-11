@@ -566,6 +566,40 @@ $Foo::Bar::VERSION = '1.23';
   vers => undef,
   all_versions => { 'Foo::Bar' => '1.23' },
 },
+{
+  name => 'no package statement; bare $VERSION',
+  code => <<'---',
+$VERSION = '1.23';
+---
+  vers => undef,
+  all_versions => { '____caller' => '1.23' },
+  TODO => 'FIXME! RT#74741',
+},
+{
+  name => 'no package statement; bare $VERSION with our',
+  code => <<'---',
+our $VERSION = '1.23';
+---
+  vers => undef,
+  all_versions => { '____caller' => '1.23' },
+  TODO => 'FIXME! RT#74741',
+},
+{
+  name => 'no package statement; fully-qualified $VERSION for main',
+  code => <<'---',
+$::VERSION = '1.23';
+---
+  vers => undef,
+  all_versions => { 'main' => '1.23' },
+},
+{
+  name => 'no package statement; fully-qualified $VERSION for other package',
+  code => <<'---',
+$Foo::Bar::VERSION = '1.23';
+---
+  vers => undef,
+  all_versions => { 'Foo::Bar' => '1.23' },
+},
 );
 
 my $test_num = 0;
