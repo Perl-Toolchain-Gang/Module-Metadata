@@ -20,6 +20,7 @@ my $undef;
 my @modules = (
 {
   vers => $undef,
+  all_versions => {},
   name => 'no $VERSION line',
   code => <<'---',
 package Simple;
@@ -27,6 +28,8 @@ package Simple;
 },
 {
   vers => $undef,
+  all_versions => {},
+  name => 'no $VERSION line',
   name => 'undefined $VERSION',
   code => <<'---',
 package Simple;
@@ -35,6 +38,7 @@ our $VERSION;
 },
 {
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
   name => 'declared & defined on same line with "our"',
   code => <<'---',
 package Simple;
@@ -43,6 +47,7 @@ our $VERSION = '1.23';
 },
 {
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
   name => 'declared & defined on separate lines with "our"',
   code => <<'---',
 package Simple;
@@ -57,6 +62,7 @@ package Simple;
 our $VERSION = '1.23'; # our $VERSION = '4.56';
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
   name => 'commented & defined on separate lines',
@@ -66,6 +72,7 @@ package Simple;
 our $VERSION = '1.23';
 ---
   vers =>'1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
   name => 'use vars',
@@ -75,6 +82,7 @@ use vars qw( $VERSION );
 $VERSION = '1.23';
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
   name => 'choose the right default package based on package/file name',
@@ -85,6 +93,7 @@ package Simple;
 $VERSION = '1.23'; # this should be chosen for version
 ---
   vers => '1.23',
+  all_versions => { 'Simple' => '1.23', 'Simple::_private' => '0' },
 },
 {
   name => 'just read the first $VERSION line',
@@ -94,6 +103,7 @@ $VERSION = '1.23'; # we should see this line
 $VERSION = eval $VERSION; # and ignore this one
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
   name => 'just read the first $VERSION line in reopened package (1)',
@@ -105,6 +115,7 @@ $VERSION = '2.34';
 package Simple;
 ---
   vers => '1.23',
+  all_versions => { 'Error::Simple' => '2.34', Simple => '1.23' },
 },
 {
   name => 'just read the first $VERSION line in reopened package (2)',
@@ -116,6 +127,7 @@ package Simple;
 $VERSION = '1.23';
 ---
   vers => '1.23',
+  all_versions => { 'Error::Simple' => '2.34', Simple => '1.23' },
 },
 {
   name => 'mentions another module\'s $VERSION',
@@ -127,6 +139,7 @@ if ( $Other::VERSION ) {
 }
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
   name => 'mentions another module\'s $VERSION in a different package',
@@ -139,6 +152,7 @@ if ( $Simple::VERSION ) {
 }
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
   name => '$VERSION checked only in assignments, not regexp ops',
@@ -150,9 +164,10 @@ if ( $VERSION =~ /1\.23/ ) {
 }
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
-  name => '$VERSION checked only in assignments, not relational ops',
+  name => '$VERSION checked only in assignments, not relational ops (1)',
   code => <<'---',
 package Simple;
 $VERSION = '1.23';
@@ -161,9 +176,10 @@ if ( $VERSION == 3.45 ) {
 }
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
-  name => '$VERSION checked only in assignments, not relational ops',
+  name => '$VERSION checked only in assignments, not relational ops (2)',
   code => <<'---',
 package Simple;
 $VERSION = '1.23';
@@ -173,6 +189,7 @@ if ( $Simple::VERSION == 3.45 ) {
 }
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
   name => 'Fully qualified $VERSION declared in package',
@@ -181,6 +198,7 @@ package Simple;
 $Simple::VERSION = 1.23;
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
   name => 'Differentiate fully qualified $VERSION in a package',
@@ -190,6 +208,7 @@ $Simple2::VERSION = '999';
 $Simple::VERSION = 1.23;
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23', Simple2 => '999' },
 },
 {
   name => 'Differentiate fully qualified $VERSION and unqualified',
@@ -199,6 +218,7 @@ $Simple2::VERSION = '999';
 $VERSION = 1.23;
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23', Simple2 => '999' },
 },
 {
   name => 'Differentiate fully qualified $VERSION and unqualified, other order',
@@ -208,6 +228,7 @@ $VERSION = 1.23;
 $Simple2::VERSION = '999';
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23', Simple2 => '999' },
 },
 {
   name => '$VERSION declared as package variable from within "main" package',
@@ -219,6 +240,7 @@ $Simple::VERSION = '1.23';
 }
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
   name => '$VERSION wrapped in parens - space inside',
@@ -231,6 +253,7 @@ package Simple;
 ($VERSION) = '1.23';
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
   name => '$VERSION follows a spurious "package" in a quoted construct',
@@ -243,6 +266,7 @@ __PACKAGE__->mk_accessors(qw(
 our $VERSION = "1.23";
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
   name => '$VERSION using version.pm',
@@ -251,6 +275,7 @@ our $VERSION = "1.23";
   use version; our $VERSION = version->new('1.23');
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
   name => '$VERSION using version.pm and qv()',
@@ -259,6 +284,7 @@ our $VERSION = "1.23";
   use version; our $VERSION = qv('1.230');
 ---
   vers => 'v1.230',
+  all_versions => { Simple => 'v1.230' },
 },
 {
   name => 'underscore version with an eval',
@@ -268,6 +294,7 @@ our $VERSION = "1.23";
   $VERSION = eval $VERSION;
 ---
   vers => '1.23_01',
+  all_versions => { Simple => '1.23_01' },
 },
 {
   name => 'Two version assignments, should ignore second one',
@@ -276,6 +303,7 @@ our $VERSION = "1.23";
   $Simple::VERSION = eval $Simple::VERSION;
 ---
   vers => '1.230',
+  all_versions => { Simple => '1.230' },
 },
 {
   name => 'declared & defined on same line with "our"',
@@ -284,6 +312,7 @@ package Simple;
 our $VERSION = '1.23_00_00';
 ---
   vers => '1.230000',
+  all_versions => { Simple => '1.230000' },
 },
 {
   name => 'package NAME VERSION',
@@ -291,6 +320,7 @@ our $VERSION = '1.23_00_00';
   package Simple 1.23;
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
   name => 'package NAME VERSION',
@@ -298,6 +328,7 @@ our $VERSION = '1.23_00_00';
   package Simple 1.23_01;
 ---
   vers => '1.23_01',
+  all_versions => { Simple => '1.23_01' },
 },
 {
   name => 'package NAME VERSION',
@@ -305,6 +336,7 @@ our $VERSION = '1.23_00_00';
   package Simple v1.2.3;
 ---
   vers => 'v1.2.3',
+  all_versions => { Simple => 'v1.2.3' },
 },
 {
   name => 'package NAME VERSION',
@@ -312,6 +344,7 @@ our $VERSION = '1.23_00_00';
   package Simple v1.2_3;
 ---
   vers => 'v1.2_3',
+  all_versions => { Simple => 'v1.2_3' },
 },
 {
   name => 'trailing crud',
@@ -321,6 +354,7 @@ our $VERSION = '1.23_00_00';
   $VERSION = '1.23-alpha';
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
   name => 'trailing crud',
@@ -330,6 +364,7 @@ our $VERSION = '1.23_00_00';
   $VERSION = '1.23b';
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
   name => 'multi_underscore',
@@ -339,6 +374,7 @@ our $VERSION = '1.23_00_00';
   $VERSION = '1.2_3_4';
 ---
   vers => '1.234',
+  all_versions => { Simple => '1.234' },
 },
 {
   name => 'non-numeric',
@@ -348,6 +384,7 @@ our $VERSION = '1.23_00_00';
   $VERSION = 'onetwothree';
 ---
   vers => '0',
+  all_versions => { Simple => '0' },
 },
 {
   name => 'package NAME BLOCK, undef $VERSION',
@@ -357,6 +394,7 @@ package Simple {
 }
 ---
   vers => $undef,
+  all_versions => {},
 },
 {
   name => 'package NAME BLOCK, with $VERSION',
@@ -366,24 +404,27 @@ package Simple {
 }
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
-  name => 'package NAME VERSION BLOCK',
+  name => 'package NAME VERSION BLOCK (1)',
   code => <<'---',
 package Simple 1.23 {
   1;
 }
 ---
   vers => '1.23',
+  all_versions => { Simple => '1.23' },
 },
 {
-  name => 'package NAME VERSION BLOCK',
+  name => 'package NAME VERSION BLOCK (2)',
   code => <<'---',
 package Simple v1.2.3_4 {
   1;
 }
 ---
   vers => 'v1.2.3_4',
+  all_versions => { Simple => 'v1.2.3_4' },
 },
 {
   name => 'set from separately-initialised variable, two lines',
@@ -394,6 +435,7 @@ package Simple;
 }
 ---
   vers => '0',
+  all_versions => { Simple => '0' },
 },
 {
   name => 'our + bare v-string',
@@ -402,6 +444,7 @@ package Simple;
 our $VERSION     = v2.2.102.2;
 ---
   vers => 'v2.2.102.2',
+  all_versions => { Simple => 'v2.2.102.2' },
 },
 {
   name => 'our + dev release',
@@ -410,6 +453,7 @@ package Simple;
 our $VERSION = "0.0.9_1";
 ---
   vers => '0.0.9_1',
+  all_versions => { Simple => '0.0.9_1' },
 },
 {
   name => 'our + crazy string and substitution code',
@@ -418,6 +462,7 @@ package Simple;
 our $VERSION     = '1.12.B55J2qn'; our $WTF = $VERSION; $WTF =~ s/^\d+\.\d+\.//; # attempts to rationalize $WTF go here.
 ---
   vers => '1.12',
+  all_versions => { Simple => '1.12' },
 },
 {
   name => 'our in braces, as in Dist::Zilla::Plugin::PkgVersion with use_our = 1',
@@ -426,6 +471,7 @@ package Simple;
 { our $VERSION = '1.12'; }
 ---
   vers => '1.12',
+  all_versions => { Simple => '1.12' },
 },
 {
   name => 'calculated version - from Acme-Pi-3.14',
@@ -435,6 +481,11 @@ my $version = atan2(1,1) * 4; $Simple::VERSION = "$version";
 1;
 ---
   vers => sub { defined $_[0] and $_[0] =~ /^3\.14159/ },
+  all_versions => sub { ref $_[0] eq 'HASH'
+                        and keys %{$_[0]} == 1
+                        and (keys%{$_[0]})[0] eq 'Simple'
+                        and (values %{$_[0]})[0] =~ /^3\.14159/
+                      },
 },
 {
   name => 'set from separately-initialised variable, one line',
@@ -444,6 +495,7 @@ package Simple;
 }
 ---
   vers => '1.7',
+  all_versions => { Simple => '1.7' },
 },
 {
   name => 'from Lingua-StopWords-0.09/devel/gen_modules.plx',
@@ -452,6 +504,7 @@ package Foo;
 our $VERSION = $Bar::VERSION;
 ---
   vers => $undef,
+  all_versions => { Foo => '0' },
 },
 {
   name => 'from XML-XSH2-2.1.17/lib/XML/XSH2/Parser.pm',
@@ -461,6 +514,7 @@ our $VERSION = # Hide from PAUSE
 $VERSION = eval $VERSION;
 ---
   vers => $undef,
+  all_versions => { main => '0' },
 },
 {
   name => 'from MBARBON/Module-Info-0.30.tar.gz',
@@ -469,6 +523,7 @@ package Simple;
 $VERSION = eval 'use version; 1' ? 'version'->new('0.30') : '0.30';
 ---
   vers => '0.30',
+  all_versions => { Simple => '0.30' },
 },
 );
 
@@ -524,6 +579,22 @@ foreach my $test_case (@modules) {
           . ')'
       )
       or $errs++;
+    }
+
+    if (exists $test_case->{all_versions}) {
+      if (ref($expected_version) eq 'CODE') {
+        ok(
+          $test_case->{all_versions}->($pm_info->{versions}),
+          "case '$test_case->{name}': all extracted versions passes match sub"
+        ) or diag 'found versions: ', explain $pm_info->{versions};
+      }
+      else {
+        is_deeply(
+          $pm_info->{versions},
+          $test_case->{all_versions},
+          'correctly found all $VERSIONs',
+        ) or diag 'found versions: ', explain $pm_info->{versions};
+      }
     }
 
     is( $warnings, '', "case '$test_case->{name}': no warnings from parsing" ) or $errs++;
