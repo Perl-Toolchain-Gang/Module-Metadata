@@ -478,8 +478,11 @@ my $tmpdir = GeneratePackage::tmpdir();
 
 # iterate through @modules
 foreach my $test_case (@modules) {
+  note '-------';
+  note $test_case->{name};
   my $code = $test_case->{code};
   my $expected_version = $test_case->{vers};
+  local $TODO = $test_case->{TODO};
   SKIP: {
     skip( "No our() support until perl 5.6", (defined $expected_version ? 3 : 2) )
         if $] < 5.006 && $code =~ /\bour\b/;

@@ -106,8 +106,11 @@ my $test_num = 0;
 my $tmpdir = GeneratePackage::tmpdir();
 
 foreach my $test_case (@pkg_names) {
+    note '-------';
+    note $test_case->{name};
     my $code = $test_case->{code};
     my $expected_name = $test_case->{package};
+    local $TODO = $test_case->{TODO};
 
     my $warnings = '';
     local $SIG{__WARN__} = sub { $warnings .= $_ for @_ };
