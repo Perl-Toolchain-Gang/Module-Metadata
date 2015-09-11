@@ -8,7 +8,7 @@ Module::Metadata - Gather package and POD information from perl module files
 
 =head1 VERSION
 
-version 1.000028
+version 1.000029
 
 =head1 SYNOPSIS
 
