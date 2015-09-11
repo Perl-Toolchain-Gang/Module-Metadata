@@ -1,5 +1,7 @@
 Revision history for Module-Metadata
 
+{{$NEXT}}
+
 1.000028  2015-09-11 04:24:39Z (TRIAL RELEASE)
   - refactored and expanded test cases
   - fixed a $VERSION extraction issue on perl 5.6.2 (RT#105978, PR#17)
