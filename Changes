@@ -1,6 +1,6 @@
 Revision history for Module-Metadata
 
-{{$NEXT}}
+1.000030  2015-11-20 03:03:24Z (TRIAL RELEASE)
   - temp dirs cleaned up during tests (Steve Hay)
   - more accurately mark tests as TODO, so as to have a quieter and less
     confusing test run without passing TODO tests. This release is primarily
