@@ -2,6 +2,8 @@ Revision history for Module-Metadata
 
 {{$NEXT}}
   - temp dirs cleaned up during tests (Steve Hay)
+  - more accurately mark tests as TODO, so as to have a quieter and less
+    confusing test run without passing TODO tests
 
 1.000029  2015-09-11 16:25:43Z (TRIAL RELEASE)
   - fix missing "use" statement in refactored test helper (only affected older
