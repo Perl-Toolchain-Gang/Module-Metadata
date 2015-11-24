@@ -10,7 +10,6 @@ use File::Temp;
 use File::Basename;
 use Cwd ();
 use File::Path;
-use Data::Dumper;
 
 plan tests => 61;
 

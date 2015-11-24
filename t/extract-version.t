@@ -3,7 +3,6 @@ use warnings;
 # vim:ts=8:sw=2:et:sta:sts=2
 
 use Test::More 0.82;
-use Data::Dumper;
 use Module::Metadata;
 
 use lib 't/lib';
