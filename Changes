@@ -1,6 +1,8 @@
 Revision history for Module-Metadata
 
 {{$NEXT}}
+  - be less noisy on failure when building as part of perl core (see perl
+    RT#126685)
 
 1.000030  2015-11-20 03:03:24Z (TRIAL RELEASE)
   - temp dirs cleaned up during tests (Steve Hay)
