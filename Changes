@@ -1,6 +1,6 @@
 Revision history for Module-Metadata
 
-{{$NEXT}}
+1.000031  2015-11-24 03:57:55Z (TRIAL RELEASE)
   - be less noisy on failure when building as part of perl core (see perl
     RT#126685)
 
