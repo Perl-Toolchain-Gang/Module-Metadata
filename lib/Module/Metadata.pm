@@ -412,8 +412,8 @@ sub _init {
   $self->_parse_fh($handle);
 
   unless($self->{module} and length($self->{module})) {
-    my ($v, $d, $f) = File::Spec->splitpath($self->{filename});
-    if($f =~ /\.pm$/) {
+    if ($self->{filename} =~ /\.pm$/) {
+      my ($v, $d, $f) = File::Spec->splitpath($self->{filename});
       $f =~ s/\..+$//;
       my @candidates = grep /$f$/, @{$self->{packages}};
       $self->{module} = shift(@candidates); # punt
