@@ -601,6 +601,16 @@ $Foo::Bar::VERSION = '1.23';
   vers => undef,
   all_versions => { 'Foo::Bar' => '1.23' },
 },
+{
+  name => 'package statement that does not quite match the filename',
+  filename => 'Simple.pm',
+  code => <<'---',
+package ThisIsNotSimple;
+our $VERSION = '1.23';
+---
+  vers => $undef,
+  all_versions => { 'ThisIsNotSimple' => '1.23' },
+},
 );
 
 my $test_num = 0;

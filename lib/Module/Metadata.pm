@@ -415,8 +415,8 @@ sub _init {
     if ($self->{filename} =~ /\.pm$/) {
       my ($v, $d, $f) = File::Spec->splitpath($self->{filename});
       $f =~ s/\..+$//;
-      my @candidates = grep /$f$/, @{$self->{packages}};
-      $self->{module} = shift(@candidates); # punt
+      my @candidates = grep /(^|::)$f$/, @{$self->{packages}};
+      $self->{module} = shift(@candidates); # this may be undef
     }
     else {
       $self->{module} = 'main';
