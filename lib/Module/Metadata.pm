@@ -414,6 +414,7 @@ sub _init {
   @{$self->{packages}} = __uniq(@{$self->{packages}});
 
   unless($self->{module} and length($self->{module})) {
+    # CAVEAT (possible TODO): .pmc files not treated the same as .pm
     if ($self->{filename} =~ /\.pm$/) {
       my ($v, $d, $f) = File::Spec->splitpath($self->{filename});
       $f =~ s/\..+$//;
@@ -442,6 +443,7 @@ sub _do_find_module {
     my $testfile = File::Spec->catfile($dir, $file);
     return [ File::Spec->rel2abs( $testfile ), $dir ]
       if -e $testfile and !-d _;  # For stuff like ExtUtils::xsubpp
+    # CAVEAT (possible TODO): .pmc files are not discoverable here
     $testfile .= '.pm';
     return [ File::Spec->rel2abs( $testfile ), $dir ]
       if -e $testfile;
