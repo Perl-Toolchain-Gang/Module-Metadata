@@ -411,6 +411,8 @@ sub _init {
   }
   $self->_parse_fh($handle);
 
+  @{$self->{packages}} = __uniq(@{$self->{packages}});
+
   unless($self->{module} and length($self->{module})) {
     if ($self->{filename} =~ /\.pm$/) {
       my ($v, $d, $f) = File::Spec->splitpath($self->{filename});
@@ -647,6 +649,12 @@ sub _parse_fh {
   $self->{packages} = \@packages;
   $self->{pod} = \%pod;
   $self->{pod_headings} = \@pod;
+}
+
+sub __uniq (@)
+{
+    my (%seen, $key);
+    grep { not $seen{ $key = $_ }++ } @_;
 }
 
 {
