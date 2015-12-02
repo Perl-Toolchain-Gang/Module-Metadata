@@ -638,8 +638,8 @@ foreach my $test_case (@modules) {
     # We want to ensure we preserve the original, as long as it's legal, so we
     # explicitly check the stringified form.
     {
-      local $TODO = $test_case->{TODO_got_version};
-      isa_ok($got, 'version') if defined $expected_version;
+      local $TODO = !defined($got) && ($test_case->{TODO_code_sub} || $test_case->{TODO_scalar});
+      isa_ok($got, 'version') or $errs++ if defined $expected_version;
     }
 
     if (ref($expected_version) eq 'CODE') {
@@ -668,19 +668,19 @@ foreach my $test_case (@modules) {
         ok(
           $test_case->{all_versions}->($pm_info->{versions}),
           "case '$test_case->{name}': all extracted versions passes match sub"
-        );
+        ) or $errs++;
       }
       else {
         is_deeply(
           $pm_info->{versions},
           $test_case->{all_versions},
           'correctly found all $VERSIONs',
-        );
+        ) or $errs++;
       }
     }
 
     is( $warnings, '', "case '$test_case->{name}': no warnings from parsing" ) or $errs++;
-    diag 'extracted versions: ', explain({ got => $pm_info->{versions}, module_contents => $code }) if !$ENV{PERL_CORE} && $errs;
+    diag 'parsed module: ', explain($pm_info) if !$ENV{PERL_CORE} && $errs;
   }
 }
 continue {
