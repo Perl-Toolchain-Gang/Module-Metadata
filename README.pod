@@ -8,7 +8,7 @@ Module::Metadata - Gather package and POD information from perl module files
 
 =head1 VERSION
 
-version 1.000031
+version 1.000032
 
 =head1 SYNOPSIS
 
@@ -225,7 +225,7 @@ There is also a mailing list available for users of this distribution, at
 L<http://lists.perl.org/list/cpan-workers.html>.
 
 There is also an irc channel available for users of this distribution, at
-L<irc://irc.perl.org/#toolchain>.
+L<C<#toolchain> on C<irc.perl.org>|irc://irc.perl.org/#toolchain>.
 
 =head1 AUTHOR
 

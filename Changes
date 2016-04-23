@@ -1,6 +1,6 @@
 Revision history for Module-Metadata
 
-{{$NEXT}}
+1.000032  2016-04-23 22:36:24Z (TRIAL RELEASE)
   - use a more strict matching heuristic when attempting to infer the
     "primary" module name in a parsed .pm file
   - only report "main" as the module name if code was seen outside another
