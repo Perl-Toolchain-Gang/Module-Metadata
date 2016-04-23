@@ -11,7 +11,7 @@ use File::Basename;
 use Cwd ();
 use File::Path;
 
-plan tests => 62;
+plan tests => 70;
 
 require_ok('Module::Metadata');
 
@@ -204,12 +204,17 @@ $::VERSION = 0.01;
 
 my ( $i, $n ) = ( 1, scalar( @scripts ) );
 foreach my $script ( @scripts ) {
+  note '-------';
+  my $errs;
   my $file = File::Spec->catfile('bin', 'simple.plx');
   my ($dist_name, $dist_dir) = new_dist(files => { $file => $script } );
   my $pm_info = Module::Metadata->new_from_file( $file );
 
-  is( $pm_info->version, '0.01', "correct script version ($i of $n)" );
+  is( $pm_info->name, 'main', 'name for script is always main');
+  is( $pm_info->version, '0.01', "correct script version ($i of $n)" ) or $errs++;
   $i++;
+
+  diag 'parsed module: ', explain($pm_info) if !$ENV{PERL_CORE} && $errs;
 }
 
 {
