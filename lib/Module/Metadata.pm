@@ -422,7 +422,18 @@ sub _init {
       $self->{module} = shift(@candidates); # this may be undef
     }
     else {
-      $self->{module} = 'main';
+      # this seems like an atrocious heuristic, albeit marginally better than
+      # what was here before. It should be rewritten entirely to be more like
+      # "if it's not a .pm file, it's not require()able as a name, therefore
+      # name() should be undef."
+      if ((grep /main/, @{$self->{packages}})
+          or (grep /main/, keys %{$self->{versions}})) {
+        $self->{module} = 'main';
+      }
+      else {
+        # TODO: this should maybe default to undef instead
+        $self->{module} = $self->{packages}[0] || '';
+      }
     }
   }
 

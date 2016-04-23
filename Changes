@@ -3,6 +3,8 @@ Revision history for Module-Metadata
 {{$NEXT}}
   - use a more strict matching heuristic when attempting to infer the
     "primary" module name in a parsed .pm file
+  - only report "main" as the module name if code was seen outside another
+    namespace, fixing bad results for pod files (RT#107525)
 
 1.000031  2015-11-24 03:57:55Z (TRIAL RELEASE)
   - be less noisy on failure when building as part of perl core (see perl

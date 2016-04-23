@@ -339,7 +339,6 @@ use GeneratePackage;
   # (this test case is ready to be rolled into a corpus loop, later)
   my $test_case = {
     name => 'file only contains pod',
-    TODO => 'RT#107525: ->name should return nothing for pod files',
     filename => 'Simple/Documentation.pod',
     code => <<'---',
 # PODNAME: Simple::Documentation
