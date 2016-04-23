@@ -11,7 +11,7 @@ use File::Basename;
 use Cwd ();
 use File::Path;
 
-plan tests => 61;
+plan tests => 62;
 
 require_ok('Module::Metadata');
 
@@ -321,6 +321,54 @@ our $VERSION = '1.23';
   my $pm_info = Module::Metadata->new_from_file('lib/Simple.pm');
   is( $pm_info->name, 'Simple', 'found default package' );
   is( $pm_info->version, '1.23', 'version for default package' );
+}
+
+my $tmpdir = GeneratePackage::tmpdir();
+my $undef;
+my $test_num = 0;
+use lib 't/lib';
+use GeneratePackage;
+
+{
+  # and now a real pod file
+  # (this test case is ready to be rolled into a corpus loop, later)
+  my $test_case = {
+    name => 'file only contains pod',
+    TODO => 'RT#107525: ->name should return nothing for pod files',
+    filename => 'Simple/Documentation.pod',
+    code => <<'---',
+# PODNAME: Simple::Documentation
+# ABSTRACT: My documentation
+
+=pod
+
+Hello, this is pod.
+
+=cut
+---
+    module => '', # TODO: should probably be $undef actually
+    all_versions => { },
+  };
+
+  note $test_case->{name};
+  my $code = $test_case->{code};
+  my $expected_name = $test_case->{module};
+  local $TODO = $test_case->{TODO};
+
+  my $errs;
+
+  my ($vol, $dir, $basename) = File::Spec->splitpath(File::Spec->catdir($tmpdir, "Simple${test_num}", ($test_case->{filename} || 'Simple.pm')));
+  my $pm_info = Module::Metadata->new_from_file(generate_file($dir, $basename, $code));
+
+  my $got_name = $pm_info->name;
+  is(
+    $got_name,
+    $expected_name,
+    "case '$test_case->{name}': module name matches",
+  )
+  or $errs++;
+
+  diag 'parsed module: ', explain($pm_info) if !$ENV{PERL_CORE} && $errs;
 }
 
 {
