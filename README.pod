@@ -8,7 +8,7 @@ Module::Metadata - Gather package and POD information from perl module files
 
 =head1 VERSION
 
-version 1.000032
+version 1.000033
 
 =head1 SYNOPSIS
 
@@ -237,7 +237,7 @@ assistance from David Golden (xdg) <dagolden@cpan.org>.
 
 =head1 CONTRIBUTORS
 
-=for stopwords Karen Etheridge David Golden Vincent Pit Matt S Trout Chris Nehren Graham Knop Olivier Mengué Tomas Doran Tatsuhiko Miyagawa tokuhirom Peter Rabbitson Steve Hay Josh Jore Craig A. Berry Mitchell Steinbrunner Edward Zborowski Gareth Harper James Raspass Jerry D. Hedden 'BinGOs' Williams Kent Fredric
+=for stopwords Karen Etheridge David Golden Vincent Pit Matt S Trout Chris Nehren Graham Knop Olivier Mengué Tomas Doran Tatsuhiko Miyagawa tokuhirom Kent Fredric Peter Rabbitson Steve Hay Jerry D. Hedden Craig A. Berry Mitchell Steinbrunner Edward Zborowski Gareth Harper James Raspass 'BinGOs' Williams Josh Jore
 
 =over 4
 
@@ -283,6 +283,10 @@ tokuhirom <tokuhirom@gmail.com>
 
 =item *
 
+Kent Fredric <kentnl@cpan.org>
+
+=item *
+
 Peter Rabbitson <ribasushi@cpan.org>
 
 =item *
@@ -291,11 +295,15 @@ Steve Hay <steve.m.hay@googlemail.com>
 
 =item *
 
-Josh Jore <jjore@cpan.org>
+Jerry D. Hedden <jdhedden@cpan.org>
 
 =item *
 
 Craig A. Berry <cberry@cpan.org>
+
+=item *
+
+Craig A. Berry <craigberry@mac.com>
 
 =item *
 
@@ -319,15 +327,11 @@ James Raspass <jraspass@gmail.com>
 
 =item *
 
-Jerry D. Hedden <jdhedden@cpan.org>
-
-=item *
-
 Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
 
 =item *
 
-Kent Fredric <kentnl@cpan.org>
+Josh Jore <jjore@cpan.org>
 
 =back
 
