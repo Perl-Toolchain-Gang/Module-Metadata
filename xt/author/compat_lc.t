@@ -1,4 +1,3 @@
-
 use strict;
 use warnings;
 
@@ -28,4 +27,3 @@ ok( $ok, "Log::Contextual being loaded didn't cause an explosion" )
   or note $error;
 
 done_testing;
-
