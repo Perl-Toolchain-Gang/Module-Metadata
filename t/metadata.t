@@ -11,6 +11,11 @@ use File::Basename;
 use Cwd ();
 use File::Path;
 
+use lib 't/lib';
+use GeneratePackage;
+
+my $tmpdir = GeneratePackage::tmpdir();
+
 plan tests => 70;
 
 require_ok('Module::Metadata');
@@ -24,29 +29,6 @@ require_ok('Module::Metadata');
 
 #########################
 
-BEGIN {
-  my $cwd = File::Spec->rel2abs(Cwd::cwd);
-  sub original_cwd { return $cwd }
-}
-
-# Set up a temp directory
-sub tmpdir {
-  my (@args) = @_;
-  my $dir = $ENV{PERL_CORE} ? original_cwd : File::Spec->tmpdir;
-  return File::Temp::tempdir('MMD-XXXXXXXX', CLEANUP => 0, DIR => $dir, @args);
-}
-
-my $tmp;
-BEGIN { $tmp = tmpdir; note "using temp dir $tmp"; }
-
-END {
-  die "tests failed; leaving temp dir $tmp behind"
-    if $ENV{AUTHOR_TESTING} and not Test::Builder->new->is_passing;
-  note "removing temp dir $tmp";
-  chdir original_cwd;
-  File::Path::rmtree($tmp);
-}
-
 # generates a new distribution:
 # files => { relative filename => $content ... }
 # returns the name of the distribution (not including version),
@@ -57,7 +39,7 @@ END {
     my %opts = @_;
 
     my $distname = 'Simple' . $test_num++;
-    my $distdir = File::Spec->catdir($tmp, $distname);
+    my $distdir = File::Spec->catdir($tmpdir, $distname);
     note "using dist $distname in $distdir";
 
     File::Path::mkpath($distdir) or die "failed to create '$distdir'";
@@ -328,11 +310,8 @@ our $VERSION = '1.23';
   is( $pm_info->version, '1.23', 'version for default package' );
 }
 
-my $tmpdir = GeneratePackage::tmpdir();
 my $undef;
 my $test_num = 0;
-use lib 't/lib';
-use GeneratePackage;
 
 {
   # and now a real pod file
