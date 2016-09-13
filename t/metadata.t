@@ -16,7 +16,7 @@ use GeneratePackage;
 
 my $tmpdir = GeneratePackage::tmpdir();
 
-plan tests => 70;
+plan tests => 71;
 
 require_ok('Module::Metadata');
 
@@ -432,9 +432,16 @@ Simple Simon
     }
   };
 
-  my $got_pvfd = Module::Metadata->package_versions_from_directory('lib');
+  my $dir = "lib";
+  my $got_pvfd = Module::Metadata->package_versions_from_directory($dir);
 
   is_deeply( $got_pvfd, $exp_pvfd, "package_version_from_directory()" )
+    or diag explain $got_pvfd;
+
+  my $absolute_file = File::Spec->rel2abs($exp_pvfd->{Simple}{file}, $dir);
+  my $got_pvfd2 = Module::Metadata->package_versions_from_directory($dir, [$absolute_file]);
+
+  is_deeply( $got_pvfd2, $exp_pvfd, "package_version_from_directory() with provided absolute file path" )
     or diag explain $got_pvfd;
 
 {
