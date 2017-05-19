@@ -3,7 +3,7 @@ use warnings;
 package GeneratePackage;
 # vim:ts=8:sw=2:et:sta:sts=2
 
-use base 'Exporter';
+our @ISA = ('Exporter');
 our @EXPORT = qw(tmpdir generate_file);
 
 use Cwd;
