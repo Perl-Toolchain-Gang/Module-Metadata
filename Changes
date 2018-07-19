@@ -1,6 +1,8 @@
 Revision history for Module-Metadata
 
 {{$NEXT}}
+  - fix how relative paths are absolutized, so they work properly on MSWin32
+    (Christian Walde, PR#24)
 
 1.000033  2016-07-24 23:32:58Z
   - fix file operation in tests for VMS
