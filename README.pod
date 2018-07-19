@@ -8,7 +8,7 @@ Module::Metadata - Gather package and POD information from perl module files
 
 =head1 VERSION
 
-version 1.000033
+version 1.000034
 
 =head1 SYNOPSIS
 
@@ -237,7 +237,7 @@ assistance from David Golden (xdg) <dagolden@cpan.org>.
 
 =head1 CONTRIBUTORS
 
-=for stopwords Karen Etheridge David Golden Vincent Pit Matt S Trout Chris Nehren Graham Knop Olivier Mengué Tomas Doran Tatsuhiko Miyagawa tokuhirom Kent Fredric Peter Rabbitson Steve Hay Jerry D. Hedden Craig A. Berry Mitchell Steinbrunner Edward Zborowski Gareth Harper James Raspass 'BinGOs' Williams Josh Jore
+=for stopwords Karen Etheridge David Golden Vincent Pit Matt S Trout Chris Nehren Graham Knop Olivier Mengué Tomas Doran tokuhirom Christian Walde Tatsuhiko Miyagawa Peter Rabbitson Steve Hay Jerry D. Hedden Craig A. Berry Mitchell Steinbrunner Edward Zborowski Gareth Harper James Raspass 'BinGOs' Williams Josh Jore Kent Fredric
 
 =over 4
 
@@ -275,15 +275,15 @@ Tomas Doran <bobtfish@bobtfish.net>
 
 =item *
 
-Tatsuhiko Miyagawa <miyagawa@bulknews.net>
-
-=item *
-
 tokuhirom <tokuhirom@gmail.com>
 
 =item *
 
-Kent Fredric <kentnl@cpan.org>
+Christian Walde <walde.christian@googlemail.com>
+
+=item *
+
+Tatsuhiko Miyagawa <miyagawa@bulknews.net>
 
 =item *
 
@@ -332,6 +332,10 @@ Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
 =item *
 
 Josh Jore <jjore@cpan.org>
+
+=item *
+
+Kent Fredric <kentnl@cpan.org>
 
 =back
 
