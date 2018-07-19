@@ -1,5 +1,7 @@
 Revision history for Module-Metadata
 
+{{$NEXT}}
+
 1.000034  2018-07-19 20:26:18Z (TRIAL RELEASE)
   - fix how relative paths are absolutized, so they work properly on MSWin32
     (Christian Walde, PR#24)
