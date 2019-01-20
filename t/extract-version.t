@@ -648,12 +648,12 @@ foreach my $test_case (@modules) {
     # We want to ensure we preserve the original, as long as it's legal, so we
     # explicitly check the stringified form.
     {
-      local $TODO = !defined($got) && ($test_case->{TODO_code_sub} || $test_case->{TODO_scalar});
+      local $TODO = !defined($got) && ($test_case->{TODO_code_sub} || $test_case->{TODO_scalar}) || undef;
       isa_ok($got, 'version') or $errs++ if defined $expected_version;
     }
 
     if (ref($expected_version) eq 'CODE') {
-      local $TODO = $test_case->{TODO_code_sub};
+      local $TODO = $test_case->{TODO_code_sub} || undef;
       ok(
         $expected_version->($got),
         "case '$test_case->{name}': module version passes match sub"
@@ -661,7 +661,7 @@ foreach my $test_case (@modules) {
       or $errs++;
     }
     else {
-      local $TODO = $test_case->{TODO_scalar};
+      local $TODO = $test_case->{TODO_scalar} || undef;
       is(
         (defined $got ? "$got" : $got),
         $expected_version,
@@ -673,7 +673,7 @@ foreach my $test_case (@modules) {
     }
 
     if (exists $test_case->{all_versions}) {
-      local $TODO = $test_case->{TODO_all_versions};
+      local $TODO = $test_case->{TODO_all_versions} || undef;
       if (ref($expected_version) eq 'CODE') {
         ok(
           $test_case->{all_versions}->($pm_info->{versions}),
