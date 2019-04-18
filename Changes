@@ -1,6 +1,7 @@
 Revision history for Module-Metadata
 
 {{$NEXT}}
+  - properly clean up temp dirs after testing
 
 1.000035  2019-04-18 02:43:11Z
   - quieten noisy tests (issue #31)
