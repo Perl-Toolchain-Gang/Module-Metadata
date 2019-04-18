@@ -648,7 +648,7 @@ foreach my $test_case (@modules) {
     # We want to ensure we preserve the original, as long as it's legal, so we
     # explicitly check the stringified form.
     {
-      local $TODO = !defined($got) && ($test_case->{TODO_code_sub} || $test_case->{TODO_scalar});
+      local $TODO = !defined($got) && ($test_case->{TODO_code_sub} || $test_case->{TODO_scalar}) ? 1 : undef;
       isa_ok($got, 'version') or $errs++ if defined $expected_version;
     }
 
