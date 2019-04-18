@@ -1,5 +1,7 @@
 Revision history for Module-Metadata
 
+{{$NEXT}}
+
 1.000036  2019-04-18 18:25:15Z
   - properly clean up temp dirs after testing
 
