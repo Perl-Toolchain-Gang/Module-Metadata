@@ -214,7 +214,7 @@ sub new_from_module {
       unless defined $args{version};
 
     croak "provides() does not support version '$args{version}' metadata"
-        unless grep { $args{version} eq $_ } qw/1.4 2/;
+        unless grep $args{version} eq $_, qw/1.4 2/;
 
     $args{prefix} = 'lib' unless defined $args{prefix};
 
@@ -667,7 +667,7 @@ sub _parse_fh {
 sub __uniq (@)
 {
     my (%seen, $key);
-    grep { not $seen{ $key = $_ }++ } @_;
+    grep !$seen{ $key = $_ }++, @_;
 }
 
 {
@@ -818,10 +818,10 @@ sub pod {
 sub is_indexable {
   my ($self, $package) = @_;
 
-  my @indexable_packages = grep { $_ ne 'main' } $self->packages_inside;
+  my @indexable_packages = grep $_ ne 'main', $self->packages_inside;
 
   # check for specific package, if provided
-  return !! grep { $_ eq $package } @indexable_packages if $package;
+  return !! grep $_ eq $package, @indexable_packages if $package;
 
   # otherwise, check for any indexable packages at all
   return !! @indexable_packages;
