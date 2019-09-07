@@ -1,5 +1,7 @@
 Revision history for Module-Metadata
 
+{{$NEXT}}
+
 1.000037  2019-09-07 18:32:44Z
   - add decode_pod option for automatic =encoding handling
 
