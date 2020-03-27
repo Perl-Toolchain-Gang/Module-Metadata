@@ -554,6 +554,7 @@ sub _parse_fh {
   my $pod_data = '';
   my $in_end = 0;
   my $encoding = '';
+  my $seen_Object_Pad = 0;
 
   while (defined( my $line = <$fh> )) {
     my $line_num = $.;
@@ -633,8 +634,7 @@ sub _parse_fh {
       }
     }
 
-    # TODO: Only armed if we've seen a `use Object::Pad`
-    elsif ( $line =~ /$CLASS_REGEXP/o ) {
+    elsif ( $seen_Object_Pad and $line =~ /$CLASS_REGEXP/o ) {
       $package = $1;
       my $version = $2;
       push( @packages, $package ) unless grep( $package eq $_, @packages );
@@ -681,6 +681,10 @@ sub _parse_fh {
       unless ( defined $vers{$package} && length $vers{$package} ) {
         $vers{$package} = $v;
       }
+    }
+
+    if( $line =~ /^\s*use\s+Object::Pad\b[^:]/ ) {
+      $seen_Object_Pad = 1;
     }
   } # end loop over each line
 

@@ -129,8 +129,9 @@ $::VERSION = 0.01;
 },
 {
   name => 'class NAME::SUBNAME',
-  package => [ 'Simple::Edward' ],
+  package => [ 'main', 'Simple::Edward' ],
   code => <<'---',
+use Object::Pad;
 class Simple::Edward;
 ---
 },
