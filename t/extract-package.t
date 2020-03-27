@@ -135,6 +135,14 @@ use Object::Pad;
 class Simple::Edward;
 ---
 },
+{
+  name => 'class NAME::SUBNAME extends NAME',
+  package => [ 'main', 'Simple::Edward' ],
+  code => <<'---',
+use Object::Pad;
+class Simple::Edward extends Another::Package;
+---
+},
 );
 
 my $test_num = 0;
