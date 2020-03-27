@@ -79,6 +79,17 @@ my $PKG_REGEXP  = qr{   # match a package declaration
   [;\{]                 # semicolon line terminator or block start (since 5.16)
 }x;
 
+my $CLASS_REGEXP = qr{  # match a class declaration from Object::Pad
+  ^[\s\{;]*             # intro chars on a line
+  class                 # the word 'class'
+  \s+                   # whitespace
+  ($PKG_NAME_REGEXP)    # a package name
+  \s*                   # optional whitespace
+  ($V_NUM_REGEXP)?      # optional version number
+  \s*                   # optional whitespace
+  [;\{]                 # semicolon line terminator or block start
+}x;
+
 my $VARNAME_REGEXP = qr{ # match fully-qualified VERSION name
   ([\$*])         # sigil - $ or *
   (
@@ -613,6 +624,21 @@ sub _parse_fh {
       push( @packages, $package ) unless grep( $package eq $_, @packages );
       $need_vers = defined $version ? 0 : 1;
 
+      if ( not exists $vers{$package} and defined $version ){
+        # Upgrade to a version object.
+        my $dwim_version = eval { _dwim_version($version) };
+        croak "Version '$version' from $self->{filename} does not appear to be valid:\n$line\n\nThe fatal error was: $@\n"
+          unless defined $dwim_version;  # "0" is OK!
+        $vers{$package} = $dwim_version;
+      }
+    }
+
+    # TODO: Only armed if we've seen a `use Object::Pad`
+    elsif ( $line =~ /$CLASS_REGEXP/o ) {
+      $package = $1;
+      my $version = $2;
+      push( @packages, $package ) unless grep( $package eq $_, @packages );
+      $need_vers = 0;
       if ( not exists $vers{$package} and defined $version ){
         # Upgrade to a version object.
         my $dwim_version = eval { _dwim_version($version) };

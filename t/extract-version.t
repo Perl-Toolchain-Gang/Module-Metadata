@@ -611,6 +611,40 @@ our $VERSION = '1.23';
   vers => $undef,
   all_versions => { 'ThisIsNotSimple' => '1.23' },
 },
+{
+  name => 'class statement decimal',
+  code => <<'---',
+class Simple 1.23;
+---
+  vers => '1.23',
+  all_versions => { 'Simple' => '1.23' },
+},
+{
+  name => 'class statement v-string',
+  code => <<'---',
+class Simple v1.24;
+---
+  vers => 'v1.24',
+  all_versions => { 'Simple' => 'v1.24' },
+},
+{
+  name => 'class block decimal',
+  code => <<'---',
+class Simple 1.25 {
+}
+---
+  vers => '1.25',
+  all_versions => { 'Simple' => '1.25' },
+},
+{
+  name => 'class block v-string',
+  code => <<'---',
+class Simple v1.26 {
+}
+---
+  vers => 'v1.26',
+  all_versions => { 'Simple' => 'v1.26' },
+},
 );
 
 my $test_num = 0;
