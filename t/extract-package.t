@@ -127,6 +127,22 @@ $VERSION = '999';
 $::VERSION = 0.01;
 ---
 },
+{
+  name => 'class NAME::SUBNAME',
+  package => [ 'main', 'Simple::Edward' ],
+  code => <<'---',
+use Object::Pad;
+class Simple::Edward;
+---
+},
+{
+  name => 'class NAME::SUBNAME extends NAME',
+  package => [ 'main', 'Simple::Edward' ],
+  code => <<'---',
+use Object::Pad;
+class Simple::Edward extends Another::Package;
+---
+},
 );
 
 my $test_num = 0;

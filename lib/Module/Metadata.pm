@@ -79,6 +79,15 @@ my $PKG_REGEXP  = qr{   # match a package declaration
   [;\{]                 # semicolon line terminator or block start (since 5.16)
 }x;
 
+my $CLASS_REGEXP = qr{  # match a class declaration from Object::Pad
+  ^[\s\{;]*             # intro chars on a line
+  class                 # the word 'class'
+  \s+                   # whitespace
+  ($PKG_NAME_REGEXP)    # a package name
+  \s*                   # optional whitespace
+  ($V_NUM_REGEXP)?      # optional version number
+}x;
+
 my $VARNAME_REGEXP = qr{ # match fully-qualified VERSION name
   ([\$*])         # sigil - $ or *
   (
@@ -543,6 +552,7 @@ sub _parse_fh {
   my $pod_data = '';
   my $in_end = 0;
   my $encoding = '';
+  my $seen_Object_Pad = 0;
 
   while (defined( my $line = <$fh> )) {
     my $line_num = $.;
@@ -622,6 +632,20 @@ sub _parse_fh {
       }
     }
 
+    elsif ( $seen_Object_Pad and $line =~ /$CLASS_REGEXP/o ) {
+      $package = $1;
+      my $version = $2;
+      push( @packages, $package ) unless grep( $package eq $_, @packages );
+      $need_vers = 0;
+      if ( not exists $vers{$package} and defined $version ){
+        # Upgrade to a version object.
+        my $dwim_version = eval { _dwim_version($version) };
+        croak "Version '$version' from $self->{filename} does not appear to be valid:\n$line\n\nThe fatal error was: $@\n"
+          unless defined $dwim_version;  # "0" is OK!
+        $vers{$package} = $dwim_version;
+      }
+    }
+
     # VERSION defined with full package spec, i.e. $Module::VERSION
     elsif ( $version_fullname && $version_package ) {
       # we do NOT save this package in found @packages
@@ -655,6 +679,10 @@ sub _parse_fh {
       unless ( defined $vers{$package} && length $vers{$package} ) {
         $vers{$package} = $v;
       }
+    }
+
+    if( $line =~ /^\s*use\s+Object::Pad\b[^:]/ ) {
+      $seen_Object_Pad = 1;
     }
   } # end loop over each line
 
