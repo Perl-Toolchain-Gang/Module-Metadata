@@ -493,6 +493,26 @@ sub _parse_version_expression {
   return ( $sigil, $variable_name, $package );
 }
 
+my $UTF8_BOM;
+my $UTF8_BOM_BYTES_1_2;
+my $UTF8_BOM_BYTES_TRAILER;
+my $UTF8_BOM_BYTES_TRAILER_LENGTH;
+BEGIN {
+  if ( "$]" >= 5.008 ) {
+
+    # Works on EBCDIC too
+    $UTF8_BOM = "\x{FEFF}";
+    utf8::encode($UTF8_BOM);
+  }
+  else {
+    $UTF8_BOM = "\x{EF}\x{BB}\x{BF}";
+  }
+
+  $UTF8_BOM_BYTES_1_2 = substr($UTF8_BOM, 0, 2);
+  $UTF8_BOM_BYTES_TRAILER = substr($UTF8_BOM, 2);
+  $UTF8_BOM_BYTES_TRAILER_LENGTH = length $UTF8_BOM_BYTES_TRAILER;
+}
+
 # Look for a UTF-8/UTF-16BE/UTF-16LE BOM at the beginning of the stream.
 # If there's one, then skip it and set the :encoding layer appropriately.
 sub _handle_bom {
@@ -512,10 +532,10 @@ sub _handle_bom {
   elsif ( $buf eq "\x{FF}\x{FE}" ) {
     $encoding = 'UTF-16LE';
   }
-  elsif ( $buf eq "\x{EF}\x{BB}" ) {
-    $buf = ' ';
+  elsif ( $buf eq $UTF8_BOM_BYTES_1_2 ) {
+    $buf = ' ' x $UTF8_BOM_BYTES_TRAILER_LENGTH;
     $count = read $fh, $buf, length $buf;
-    if ( defined $count and $count >= 1 and $buf eq "\x{BF}" ) {
+    if ( defined $count and $count >= 1 and $buf eq $UTF8_BOM_BYTES_TRAILER ) {
       $encoding = 'UTF-8';
     }
   }
