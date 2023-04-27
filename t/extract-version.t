@@ -619,6 +619,7 @@ my $tmpdir = GeneratePackage::tmpdir();
 
 # iterate through @modules
 foreach my $test_case (@modules) {
+  note '';
   note '-------';
   note $test_case->{name};
   my $code = $test_case->{code};
