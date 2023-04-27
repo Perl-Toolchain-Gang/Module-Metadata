@@ -79,6 +79,17 @@ my $PKG_REGEXP  = qr{   # match a package declaration
   [;\{]                 # semicolon line terminator or block start (since 5.16)
 }x;
 
+my $CLASS_REGEXP = qr{  # match a class declaration (core since 5.38)
+  ^[\s\{;]*             # intro chars on a line
+  class                 # the word 'class'
+  \s+                   # whitespace
+  ($PKG_NAME_REGEXP)    # a package name
+  \s*                   # optional whitespace
+  ($V_NUM_REGEXP)?      # optional version number
+  \s*                   # optional whitespace
+  [;\{]                 # semicolon line terminator or block start
+}x;
+
 my $VARNAME_REGEXP = qr{ # match fully-qualified VERSION name
   ([\$*])         # sigil - $ or *
   (
@@ -607,7 +618,7 @@ sub _parse_fh {
         ? $self->_parse_version_expression( $line )
         : ();
 
-    if ( $line =~ /$PKG_REGEXP/o ) {
+    if ( $line =~ /$PKG_REGEXP/o or $line =~ /$CLASS_REGEXP/ ) {
       $package = $1;
       my $version = $2;
       push( @packages, $package ) unless grep( $package eq $_, @packages );
