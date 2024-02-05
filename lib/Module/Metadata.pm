@@ -713,6 +713,10 @@ sub _evaluate_version_line {
   $eval = $1 if $eval =~ m{^(.+)}s;
 
   local $^W;
+
+  # if inc has been set, look there for any required modules
+  local @INC = (@{$self->{inc}}, @INC) if defined $self->{inc};
+
   # Try to get the $VERSION
   my $vsub = __clean_eval($eval);
   # some modules say $VERSION <equal sign> $Foo::Bar::VERSION, but Foo::Bar isn't
