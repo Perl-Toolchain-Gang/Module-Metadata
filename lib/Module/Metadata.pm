@@ -87,7 +87,7 @@ my $CLASS_REGEXP = qr{  # match a class declaration (core since 5.38)
   \s*                   # optional whitespace
   ($V_NUM_REGEXP)?      # optional version number
   \s*                   # optional whitespace
-  [;\{]                 # semicolon line terminator or block start
+  [:;\{]                # attribute start, semicolon line terminator or block start
 }x;
 
 my $VARNAME_REGEXP = qr{ # match fully-qualified VERSION name
