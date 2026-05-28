@@ -127,6 +127,29 @@ $VERSION = '999';
 $::VERSION = 0.01;
 ---
 },
+{
+  name => 'class NAME::SUBNAME',
+  package => [ 'Simple::Edward' ],
+  code => <<'---',
+class Simple::Edward;
+---
+},
+{
+  name => 'class NAME::SUBNAME',
+  package => [ 'main', 'Simple::Edward' ],
+  code => <<'---',
+our $foo = 1;
+class Simple::Edward;
+---
+},
+{
+  name => 'package and class declarations',
+  package => [ 'Ticket::Widget::Entry' ],
+  code => <<'---',
+package Ticket::Widget::Entry 0.36;
+class Ticket::Widget::Entry :strict(params) :isa(Tickit::Widget);
+---
+},
 );
 
 my $test_num = 0;

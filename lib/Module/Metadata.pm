@@ -14,7 +14,7 @@ sub __clean_eval { eval $_[0] }
 use strict;
 use warnings;
 
-our $VERSION = '1.000038';
+our $VERSION = '1.000040';
 
 use Carp qw/croak/;
 use File::Spec;
@@ -74,9 +74,20 @@ my $PKG_REGEXP  = qr{   # match a package declaration
   \s+                   # whitespace
   ($PKG_NAME_REGEXP)    # a package name
   \s*                   # optional whitespace
-  ($V_NUM_REGEXP)?        # optional version number
-  \s*                   # optional whitesapce
+  ($V_NUM_REGEXP)?      # optional version number
+  \s*                   # optional whitespace
   [;\{]                 # semicolon line terminator or block start (since 5.16)
+}x;
+
+my $CLASS_REGEXP = qr{  # match a class declaration (core since 5.38)
+  ^[\s\{;]*             # intro chars on a line
+  class                 # the word 'class'
+  \s+                   # whitespace
+  ($PKG_NAME_REGEXP)    # a package name
+  \s*                   # optional whitespace
+  ($V_NUM_REGEXP)?      # optional version number
+  \s*                   # optional whitespace
+  [:;\{]                # attribute start, semicolon line terminator or block start
 }x;
 
 my $VARNAME_REGEXP = qr{ # match fully-qualified VERSION name
@@ -627,7 +638,7 @@ sub _parse_fh {
         ? $self->_parse_version_expression( $line )
         : ();
 
-    if ( $line =~ /$PKG_REGEXP/o ) {
+    if ( $line =~ /$PKG_REGEXP/o or $line =~ /$CLASS_REGEXP/ ) {
       $package = $1;
       my $version = $2;
       push( @packages, $package ) unless grep( $package eq $_, @packages );

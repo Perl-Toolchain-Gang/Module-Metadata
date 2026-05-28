@@ -8,7 +8,7 @@ Module::Metadata - Gather package and POD information from perl module files
 
 =head1 VERSION
 
-version 1.000037
+version 1.000039
 
 =head1 SYNOPSIS
 
@@ -219,6 +219,14 @@ Returns a boolean indicating whether the package (if provided) or any package
 Note This only checks for valid C<package> declarations, and does not take any
 ownership information into account.
 
+=head1 GIVING THANKS
+
+=for stopwords MetaCPAN GitHub
+
+If you found this module to be useful, please show your appreciation by
+adding a +1 in L<MetaCPAN|https://metacpan.org/dist/Module-Metadata>
+and a star in L<GitHub|https://github.com/Perl-Toolchain-Gang/Module-Metadata>.
+
 =head1 SUPPORT
 
 Bugs may be submitted through L<the RT bug tracker|https://rt.cpan.org/Public/Dist/Display.html?Name=Module-Metadata>
@@ -240,7 +248,7 @@ assistance from David Golden (xdg) <dagolden@cpan.org>.
 
 =head1 CONTRIBUTORS
 
-=for stopwords Karen Etheridge David Golden Vincent Pit Matt S Trout Chris Nehren Tomas Doran Olivier Mengué Graham Knop tokuhirom Tatsuhiko Miyagawa Christian Walde Leon Timmermans Peter Rabbitson Steve Hay Jerry D. Hedden Craig A. Berry Mitchell Steinbrunner Edward Zborowski Gareth Harper James Raspass 'BinGOs' Williams Josh Jore Kent Fredric
+=for stopwords Karen Etheridge David Golden Vincent Pit Matt S Trout Chris Nehren Graham Knop Olivier Mengué Tomas Doran Christian Walde Craig A. Berry Tatsuhiko Miyagawa tokuhirom 'BinGOs' Williams Mitchell Steinbrunner Edward Zborowski Erik Huelsmann Gareth Harper James Raspass Jerry D. Hedden Josh Jore Kent Fredric Leon Timmermans Peter Rabbitson Steve Hay
 
 =over 4
 
@@ -266,7 +274,7 @@ Chris Nehren <apeiron@cpan.org>
 
 =item *
 
-Tomas Doran <bobtfish@bobtfish.net>
+Graham Knop <haarg@haarg.org>
 
 =item *
 
@@ -274,15 +282,7 @@ Olivier Mengué <dolmen@cpan.org>
 
 =item *
 
-Graham Knop <haarg@haarg.org>
-
-=item *
-
-tokuhirom <tokuhirom@gmail.com>
-
-=item *
-
-Tatsuhiko Miyagawa <miyagawa@bulknews.net>
+Tomas Doran <bobtfish@bobtfish.net>
 
 =item *
 
@@ -290,27 +290,19 @@ Christian Walde <walde.christian@googlemail.com>
 
 =item *
 
-Leon Timmermans <fawaka@gmail.com>
-
-=item *
-
-Peter Rabbitson <ribasushi@cpan.org>
-
-=item *
-
-Steve Hay <steve.m.hay@googlemail.com>
-
-=item *
-
-Jerry D. Hedden <jdhedden@cpan.org>
-
-=item *
-
 Craig A. Berry <cberry@cpan.org>
 
 =item *
 
-Craig A. Berry <craigberry@mac.com>
+Tatsuhiko Miyagawa <miyagawa@bulknews.net>
+
+=item *
+
+tokuhirom <tokuhirom@gmail.com>
+
+=item *
+
+Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
 
 =item *
 
@@ -326,6 +318,10 @@ Edward Zborowski <ed@rubensteintech.com>
 
 =item *
 
+Erik Huelsmann <ehuels@gmail.com>
+
+=item *
+
 Gareth Harper <gareth@broadbean.com>
 
 =item *
@@ -334,7 +330,7 @@ James Raspass <jraspass@gmail.com>
 
 =item *
 
-Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+Jerry D. Hedden <jdhedden@cpan.org>
 
 =item *
 
@@ -343,6 +339,18 @@ Josh Jore <jjore@cpan.org>
 =item *
 
 Kent Fredric <kentnl@cpan.org>
+
+=item *
+
+Leon Timmermans <fawaka@gmail.com>
+
+=item *
+
+Peter Rabbitson <ribasushi@cpan.org>
+
+=item *
+
+Steve Hay <steve.m.hay@googlemail.com>
 
 =back
 
